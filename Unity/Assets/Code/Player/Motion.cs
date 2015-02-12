@@ -49,7 +49,7 @@ public class Motion {
 	}
 
 	public virtual void ControlsEffect(){ //the base bit is just to get input
-		SpeedSanityCheck (); 
+
 	}
 	public virtual void ControlsInput(){
 		SetAxis ();
@@ -74,13 +74,6 @@ public class Motion {
 	}
 	public virtual void ExitState(){
 		_player.LastState = _state; 
-	}
-	public virtual void SpeedSanityCheck(){ //ensures things don't get too hinky 
-		if (_previousSpeed + 15 < _rigid.velocity.magnitude && _rigid.velocity.magnitude < 20) {
-			Debug.Log(_rigid.velocity.magnitude + " Before clamp"); 
-			_rigid.velocity =  _rigid.velocity.normalized * Mathf.Clamp(_rigid.velocity.magnitude,0,_previousSpeed +2); 
-			Debug.Log(_rigid.velocity.magnitude +" Things went insane"); 
-		}
 	}
 	public virtual void LookTowardsCamera(){ //called when you move forwards or backwards
 		Quaternion _targetRotation =  Quaternion.Euler(_player.transform.rotation.eulerAngles.x, _cameraTrans.rotation.eulerAngles.y, _player.transform.rotation.eulerAngles.z);

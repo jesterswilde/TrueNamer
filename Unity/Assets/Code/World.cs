@@ -13,10 +13,14 @@ public class World : MonoBehaviour {
 	public static World T; 
 	[SerializeField]
 	CameraController _cameraController; 
-
-	[SerializeField]
+	
 	Adjective[] _theAdjectives; 
 	public Adjective[] AllAdj { get { return _theAdjectives; } }
+	[SerializeField]
+	Color _selectedLerpColor; 
+	public static Color SelectedColor; 
+
+	static int _id = 0; 
 
 	void AdjectivesInGameStart(){
 		_theAdjectives = GetComponentsInChildren<Adjective> (); 
@@ -24,6 +28,11 @@ public class World : MonoBehaviour {
 		foreach (Adjective _adj in _allAdjectives) {
 			_adj.GameStart(); 
 		}
+	}
+
+	public static int GetID(){
+		_id ++; 
+		return _id; 
 	}
 
 	void Awake(){
@@ -38,6 +47,7 @@ public class World : MonoBehaviour {
 				} else
 						Debug.Log ("Hook the camera up to the world node homie homie G"); 
 		T = this;  
+		SelectedColor = _selectedLerpColor; 
 	}
 	void Start(){
 		AdjectivesInGameStart (); 

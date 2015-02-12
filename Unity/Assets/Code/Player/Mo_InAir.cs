@@ -19,18 +19,18 @@ public class Mo_InAir : Motion {
 	public override void ControlsInput (){
 		base.ControlsInput ();
 		HeavyGravity (); 
+		Forward (); 
 	}
 
 	public override void ControlsEffect ()
 	{
 		base.ControlsEffect ();
 		Forward (); 
-		SpeedSanityCheck (); 
+
 	}
 	public override void EnterState ()
 	{
 		_camera.Normal (); 
-		Debug.Log (_rigid.velocity.magnitude + " | Current Speed"); 
 	}
 	public override void MotionState ()
 	{

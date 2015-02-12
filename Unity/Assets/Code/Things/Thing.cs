@@ -30,10 +30,20 @@ public class Thing : MonoBehaviour {
 	#endregion 
 
 	#region Non Designer Modified Properties
+	int _id; 
+	public int ID { get { return _id; } }
+
 	float _sleepAmount = .1f;
 	float _sleepTimer;
 	bool _isKinematic  = true; 
 	public bool IsKinematic { get { return _isKinematic; } }
+
+	bool _isSelected = false; 
+	bool _isColorLerping = false; 
+	MeshRenderer _renderer; 
+	Color _startingColor; 
+	Material _startingMaterial; 
+
 	#endregion
 
 	#region Update Thing Routine
@@ -62,6 +72,36 @@ public class Thing : MonoBehaviour {
 			PhysicsSleep(); 
 		}
 	}
+	#endregion
+
+	#region Visual Indicators of stuff happening
+
+	public void Select(){ //when the player selects the thing
+		_isSelected = true; 
+		_isColorLerping = true; 
+	}
+
+	public void Deselect(){ //when it gets deselected
+		_isSelected = false; 
+		_isColorLerping = true; 
+	}
+	void SelectMaterialLerp(){
+		if (_isColorLerping) {
+			if(_isSelected == true){
+				_startingMaterial.color = Color.Lerp(_startingMaterial.color,World.SelectedColor, Time.deltaTime *3);
+				if(_startingMaterial.color == World.SelectedColor){
+					_isColorLerping = false; 
+				}
+			}
+			else{
+				_startingMaterial.color = Color.Lerp(_startingMaterial.color, _startingColor, Time.deltaTime*3); 
+				if(_startingMaterial.color == _startingColor){
+					_isColorLerping = false; 
+				}
+			}
+		}
+	}
+
 	#endregion
 
 	#region Physics Stuff
@@ -131,9 +171,14 @@ public class Thing : MonoBehaviour {
 	void Start(){
 		_rigid = GetComponent<Rigidbody> (); 
 		UpdateThing (); 
+		_renderer =  GetComponent<MeshRenderer> ();
+		_startingMaterial = _renderer.material; 
+		_startingColor = _startingMaterial.color; 
+		_id = World.GetID (); 
 	}
 	void Update(){
 		UpdateSleepTimer (); 
+		SelectMaterialLerp (); 
 	}
 
 }

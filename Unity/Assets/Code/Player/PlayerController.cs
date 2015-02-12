@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour {
 	float _verticalInput;
 	float _horizontalInput;
 	float _jumpInput; 
+	Vector3 _screenCenter; 
 
 	//all the components
 	[SerializeField]
@@ -47,10 +48,14 @@ public class PlayerController : MonoBehaviour {
 	string _lastState;
 	public string LastState { get { return _lastState; } set { _lastState = value; } }
 	public string CurrentState{ get { return _state; } set { _state = value; } } 
+
+	//Things and stuff related to things
+	Thing _selectedThing; 
+
 	#endregion
 
 	//this is the housing for all motion controls
-	//they are broken into different motion classes that are switched to based on conditions. 
+	//they are broken into different motion classes that are switched to based on conditions.  --------------------------------
 
 	public void NowInAir(){
 		_move.ExitState (); 
@@ -66,35 +71,51 @@ public class PlayerController : MonoBehaviour {
 
 	//Thing interaction --------------------------------------------
 
+	void Crosshair(){ //raycasts from the center of the screen to find what we are 'looking at'
+		Ray _ray = Camera.main.ScreenPointToRay (_screenCenter); 
+		RaycastHit _hit;
+		if(Physics.Raycast(_ray,out _hit)){
+			Thing _thingFromRay = _hit.collider.gameObject.GetComponent<Thing>(); 
+			if(_thingFromRay != null){
+				SelectTheThing(_thingFromRay); 
+			}
+		}
+	}
+	void SelectTheThing(Thing _theThing){
+		if(_selectedThing != null){
+			if (_theThing.ID != _selectedThing.ID) { //they are not the same thing
+				_selectedThing.Deselect(); //deselect the old thing 
+				_selectedThing = _theThing;  //select the new one
+				_selectedThing.Select(); 
+			}
+		}
+		else {
+			_selectedThing  =_theThing;
+			_selectedThing = _theThing;  //select the new one
+			_selectedThing.Select(); 
+		}
+	}
+
 	void Clicking(){
 		if (Input.GetMouseButtonDown (0)) {
-			Debug.Log("clicked"); 
-			Ray _ray = Camera.main.ScreenPointToRay (Input.mousePosition); 
-			RaycastHit _hit; 
-			if (Physics.Raycast (_ray,out _hit)) {
-				Thing _clickedThing = _hit.collider.gameObject.GetComponent<Thing>(); 
-				if(_clickedThing != null){
-					Debug.Log("clicked an object"); 
-					Adjective.CopyAdjective(World.T.AllAdj[0],_clickedThing.gameObject,0); 
-				}
+			if(_selectedThing != null){
+				Debug.Log("clicked an object"); 
+				Adjective.CopyAdjective(World.T.AllAdj[0],_selectedThing.gameObject,0); 
 			}
 		}
 		if (Input.GetMouseButtonDown (1)) {
-			Debug.Log("clicked"); 
-			Ray _ray = Camera.main.ScreenPointToRay (Input.mousePosition); 
-			RaycastHit _hit; 
-			if (Physics.Raycast (_ray,out _hit)) {
-				Thing _clickedThing = _hit.collider.gameObject.GetComponent<Thing>(); 
-				if(_clickedThing != null){
-					Debug.Log("clicked an object"); 
-					Adjective.CopyAdjective(World.T.AllAdj[1],_clickedThing.gameObject,0); 
-				}
+			if(_selectedThing != null){
+				Debug.Log("clicked an object"); 
+				Adjective.CopyAdjective(World.T.AllAdj[0],_selectedThing.gameObject,0); 
 			}
 		}
 	}
-	void ReplaceWithLarge(){
-
+	void GetCenterOfScreen(){
+		float _x = Screen.width / 2;
+		float _y = Screen.height / 2; 
+		_screenCenter = new Vector3 (_x, _y, 0); 
 	}
+
 
 	void Awake(){
 		if (GetComponent<Rigidbody> () != null) { //sanity checks and componenet starting
@@ -111,11 +132,13 @@ public class PlayerController : MonoBehaviour {
 		_moInAir.Startup (this); 
 		_move = _moGround; 
 		_move.EnterState (); 
+		GetCenterOfScreen (); 
 	}
 	void FixedUpdate () {
 		_move.ControlsEffect (); //calls has the effects of physics stuff happen
 	}
 	void Update(){
+		Crosshair (); 
 		Clicking (); 
 		_move.ControlsInput ();  //gets input
 		_move.MotionState (); //checks to see if it should change states
