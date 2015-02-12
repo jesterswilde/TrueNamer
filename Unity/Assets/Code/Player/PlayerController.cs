@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour {
 	float _horizontalInput;
 	float _jumpInput; 
 	Vector3 _screenCenter; 
+	Vector3 _velocity; 
+	public Vector3 Velocity { get { return _velocity; } }
 
 	//all the components
 	[SerializeField]
@@ -54,6 +56,7 @@ public class PlayerController : MonoBehaviour {
 
 	#endregion
 
+	#region Motion Stuff
 	//this is the housing for all motion controls
 	//they are broken into different motion classes that are switched to based on conditions.  --------------------------------
 
@@ -68,7 +71,9 @@ public class PlayerController : MonoBehaviour {
 		_move = _moGround; 
 		_move.EnterState (); 
 	}
+	#endregion
 
+	#region Thing Interaction
 	//Thing interaction --------------------------------------------
 
 	void Crosshair(){ //raycasts from the center of the screen to find what we are 'looking at'
@@ -128,8 +133,9 @@ public class PlayerController : MonoBehaviour {
 		float _y = Screen.height / 2; 
 		_screenCenter = new Vector3 (_x, _y, 0); 
 	}
+	#endregion
 
-
+	#region Start Update n such
 	void Awake(){
 		if (GetComponent<Rigidbody> () != null) { //sanity checks and componenet starting
 			_rigid = GetComponent<Rigidbody> (); 
@@ -155,5 +161,8 @@ public class PlayerController : MonoBehaviour {
 		Clicking (); 
 		_move.ControlsInput ();  //gets input
 		_move.MotionState (); //checks to see if it should change states
+		Debug.Log (_rigid.velocity.magnitude); 
+		_velocity = _rigid.velocity; 
 	}
+	#endregion
 }

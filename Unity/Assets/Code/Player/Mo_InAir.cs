@@ -31,6 +31,7 @@ public class Mo_InAir : Motion {
 	public override void EnterState ()
 	{
 		_camera.Normal (); 
+		_player.CurrentState = "InAir";
 	}
 	public override void MotionState ()
 	{
@@ -50,5 +51,6 @@ public class Mo_InAir : Motion {
 	public override void ExitState ()
 	{
 		base.ExitState ();
+		_player.LastState = "InAir"; 
 	}
 }

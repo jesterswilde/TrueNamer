@@ -91,10 +91,12 @@ public class Mo_Ground : Motion {
 	{
 		_camera.Normal (); 
 		StartJumpDelay ();
+		_player.CurrentState = "Grounded";
 	}
 	public override void ExitState ()
 	{
 		base.ExitState ();
+		_player.LastState = "Grounded"; 
 	}
 	public override void Startup (PlayerController _thePlayer)
 	{

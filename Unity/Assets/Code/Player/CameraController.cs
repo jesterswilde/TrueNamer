@@ -98,6 +98,6 @@ public class NormalOrbit : OrbitMethod {
 	{
 		float _yRot = _camTrans.rotation.eulerAngles.y + Input.GetAxis ("Mouse X") * _orbitSpeed;
 		float _xRot = _camTrans.rotation.eulerAngles.x + Input.GetAxis ("Mouse Y") * _orbitSpeed*-1;
-		_camTrans.rotation = Quaternion.Euler (ClampValue(_xRot,70,70), _yRot, 0); 
+		_camTrans.rotation = Quaternion.Euler (ClampValue(_xRot,85, 85), _yRot, 0); 
 	}
 }

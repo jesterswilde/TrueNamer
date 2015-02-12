@@ -17,11 +17,11 @@ public class Thing : MonoBehaviour {
 	[SerializeField]
 	bool _flammable = false;
 	bool _modFlammable; 
-	public bool Flammable {get { return _modFlammable; } set{ _modFlammable =value;}}
+	public bool IsFlammable {get { return _modFlammable; } set{ _modFlammable =value;}}
 	[SerializeField]
 	bool _bouncy = false;
 	bool _modBouncy; 
-	public bool Bouncy {get{return _modBouncy;} set{ _modBouncy = value;}}
+	public bool IsBouncy {get{return _modBouncy;} set{ _modBouncy = value;}}
 
 	Rigidbody _rigid; 
 
@@ -34,9 +34,11 @@ public class Thing : MonoBehaviour {
 	public int ID { get { return _id; } }
 
 	float _sleepAmount = .1f;
-	float _sleepTimer;
+	float _kinamticTimer;
 	bool _isKinematic  = true; 
 	public bool IsKinematic { get { return _isKinematic; } }
+	Vector3 _velocity; 
+	public Vector3 Velocity { get { return _velocity; } }
 
 	bool _isSelected = false; 
 	bool _isColorLerping = false; 
@@ -109,7 +111,7 @@ public class Thing : MonoBehaviour {
 		_rigid.freezeRotation = true; 
 		_rigid.drag = 10; 
 		_isKinematic = true; 
-		_sleepTimer = 0; 
+		_kinamticTimer = 0; 
 	}
 	void PhysicsWake(){ //Reverts this state
 		_rigid.freezeRotation = false;
@@ -118,20 +120,40 @@ public class Thing : MonoBehaviour {
 	}
 	void UpdateSleepTimer(){
 		if (_isKinematic) {
-			_sleepTimer += Time.deltaTime;
-			if(_sleepTimer >= _sleepAmount){
+			_kinamticTimer += Time.deltaTime;
+			if(_kinamticTimer >= _sleepAmount){
 				_isKinematic = false;
 				PhysicsWake(); 
 			}
 		}
 	}
+	public void GetBounced(Collision _theCollision, Thing _otherThing){
+		if(!_isKinematic){
+			_isKinematic = true; 
+			_kinamticTimer = 0; 
+			if (IsBouncy || _otherThing.IsBouncy) {
+				_rigid.velocity = Vector3.Reflect(_rigid.velocity,_theCollision.contacts[0].normal) *.8f; 
+			}
+		}
+	}
+	public void GetBounced(Collision _theCollision, PlayerController _player){
+		_isKinematic = true; 
+		_kinamticTimer = 0; 
+		if (IsBouncy && _player.CurrentState != "Grounded" && _player.Velocity.magnitude > 8) {
+			Debug.Log("Player got bounced"); 
+			Debug.Log(_player.rigidbody.velocity.magnitude); 
+			_player.Rigid.velocity = Vector3.Reflect(_player.Velocity ,_theCollision.contacts[0].normal) *.7f; 
+		}
+	}
 
 	void OnCollisionEnter(Collision _other){ //when we hit objects, do shit. 
 		Thing _colThing = _other.gameObject.GetComponent<Thing> (); 
-		if (_colThing != null) {
-			if(!_colThing.IsKinematic){
-				
-			}
+		if (_colThing != null) { //if a thing collides with another thing
+			GetBounced(_other, _colThing); 
+		}
+		PlayerController _player = _other.gameObject.GetComponent<PlayerController> ();
+		if (_player != null) {
+			GetBounced(_other, _player); 
 		}
 	}
 
@@ -167,7 +189,7 @@ public class Thing : MonoBehaviour {
 	}
 	#endregion
 
-
+	#region Start and Update
 	void Start(){
 		_rigid = GetComponent<Rigidbody> (); 
 		UpdateThing (); 
@@ -179,6 +201,9 @@ public class Thing : MonoBehaviour {
 	void Update(){
 		UpdateSleepTimer (); 
 		SelectMaterialLerp (); 
+		if(!_rigid.IsSleeping()){
+			_velocity = _rigid.velocity;
+		}
 	}
-
+	#endregion
 }

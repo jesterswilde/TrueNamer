@@ -35,6 +35,11 @@ public class World : MonoBehaviour {
 		return _id; 
 	}
 
+	void GameSettings(){
+		Screen.showCursor = false; 
+		Screen.lockCursor = true; 
+	}
+
 	void Awake(){
 		if (_player != null) {
 						PlayerCon = _player; 
@@ -51,5 +56,6 @@ public class World : MonoBehaviour {
 	}
 	void Start(){
 		AdjectivesInGameStart (); 
+		GameSettings (); 
 	}
 }
