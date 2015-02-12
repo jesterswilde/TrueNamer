@@ -79,20 +79,33 @@ public class PlayerController : MonoBehaviour {
 			if(_thingFromRay != null){
 				SelectTheThing(_thingFromRay); 
 			}
+			else {
+				SelectTheThing(null); 
+			}
+		}
+		else{
+			SelectTheThing(null); 
 		}
 	}
 	void SelectTheThing(Thing _theThing){
-		if(_selectedThing != null){
-			if (_theThing.ID != _selectedThing.ID) { //they are not the same thing
-				_selectedThing.Deselect(); //deselect the old thing 
+		if(_theThing != null){ 
+			if(_selectedThing != null){
+				if (_theThing.ID != _selectedThing.ID) { //they are not the same thing
+					_selectedThing.Deselect(); //deselect the old thing 
+					_selectedThing = _theThing;  //select the new one
+					_selectedThing.Select(); 
+				}
+			}
+			else {
 				_selectedThing = _theThing;  //select the new one
 				_selectedThing.Select(); 
 			}
 		}
-		else {
-			_selectedThing  =_theThing;
-			_selectedThing = _theThing;  //select the new one
-			_selectedThing.Select(); 
+		else{
+			if(_selectedThing !=null){
+				_selectedThing.Deselect(); 
+				_selectedThing = null;
+			}
 		}
 	}
 
@@ -106,7 +119,7 @@ public class PlayerController : MonoBehaviour {
 		if (Input.GetMouseButtonDown (1)) {
 			if(_selectedThing != null){
 				Debug.Log("clicked an object"); 
-				Adjective.CopyAdjective(World.T.AllAdj[0],_selectedThing.gameObject,0); 
+				Adjective.CopyAdjective(World.T.AllAdj[1],_selectedThing.gameObject,0); 
 			}
 		}
 	}
