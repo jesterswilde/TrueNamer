@@ -33,12 +33,14 @@ public class Thing : MonoBehaviour {
 	int _id; 
 	public int ID { get { return _id; } }
 
-	float _sleepAmount = .1f;
+	float _sleepAmount = .2f;
 	float _kinamticTimer;
 	bool _isKinematic  = true; 
 	public bool IsKinematic { get { return _isKinematic; } }
 	Vector3 _velocity; 
 	public Vector3 Velocity { get { return _velocity; } }
+	bool _isShunting = false; 
+	public bool IsShunting { get { return _isShunting; } }
 
 	bool _isSelected = false; 
 	bool _isColorLerping = false; 
@@ -68,10 +70,11 @@ public class Thing : MonoBehaviour {
 	}
 	void ApplyScaleMod(){
 		if (_modScale != _scale || transform.localScale.x != _modScale) {
-			Debug.Log("modify scale"); 
+			_isShunting = true; 
+			PhysicsSleep(); 
+			ShuntObjects(); 
 			transform.localScale = new Vector3(_modScale,_modScale,_modScale); 
 			_rigid.WakeUp(); 
-			PhysicsSleep(); 
 		}
 	}
 	#endregion
@@ -108,19 +111,22 @@ public class Thing : MonoBehaviour {
 
 	#region Physics Stuff
 	void PhysicsSleep(){ //When we don't want objects to be flying around, we sleep 'em
-		_rigid.freezeRotation = true; 
-		_rigid.drag = 10; 
-		_isKinematic = true; 
-		_kinamticTimer = 0; 
+		if(_rigid != null){
+			_rigid.freezeRotation = true; 
+			_rigid.drag = 100; 
+			_isKinematic = true; 
+			_kinamticTimer = 0;
+		}
 	}
 	void PhysicsWake(){ //Reverts this state
 		_rigid.freezeRotation = false;
 		_rigid.drag = 0; 
-		_rigid.isKinematic = false; 
+		_isKinematic= false; 
+		_isShunting = false; 
 	}
 	void UpdateSleepTimer(){
 		if (_isKinematic) {
-			_kinamticTimer += Time.deltaTime;
+			_kinamticTimer += Time.fixedDeltaTime;
 			if(_kinamticTimer >= _sleepAmount){
 				_isKinematic = false;
 				PhysicsWake(); 
@@ -143,6 +149,16 @@ public class Thing : MonoBehaviour {
 			Debug.Log("Player got bounced"); 
 			Debug.Log(_player.rigidbody.velocity.magnitude); 
 			_player.Rigid.velocity = Vector3.Reflect(_player.Velocity ,_theCollision.contacts[0].normal) *.7f; 
+		}
+	}
+	void ShuntObjects(){
+		float _sphereRad = Vector3.Distance (this.collider.bounds.max, this.collider.bounds.center); 
+		Collider[] _shuntedColliders = Physics.OverlapSphere (transform.position, _sphereRad); 
+		foreach (Collider _col in _shuntedColliders) {
+			Thing _colThing =  _col.gameObject.GetComponent<Thing>(); 
+			if(_colThing != null){
+				_colThing.PhysicsSleep(); 
+			}
 		}
 	}
 

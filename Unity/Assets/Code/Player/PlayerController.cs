@@ -161,7 +161,6 @@ public class PlayerController : MonoBehaviour {
 		Clicking (); 
 		_move.ControlsInput ();  //gets input
 		_move.MotionState (); //checks to see if it should change states
-		Debug.Log (_rigid.velocity.magnitude); 
 		_velocity = _rigid.velocity; 
 	}
 	#endregion
