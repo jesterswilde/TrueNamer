@@ -30,7 +30,7 @@ public class Motion {
 	protected string _state; 
 	protected string _lastState; 
 	public string LastState { get { return _lastState; } }
-	public string CurrentState { get { return _state; } } 
+	public string StateName { get { return _state; } } 
 
 	//this bit is just to get all the variables that I need taken from the player controller script
 
@@ -70,10 +70,10 @@ public class Motion {
 
 	//mostly book keeping
 	public virtual void EnterState(){
-		_player.CurrentState = _state; 
+
 	}
 	public virtual void ExitState(){
-		_player.LastState = _state; 
+		_player.LastState = this; 
 	}
 	public virtual void LookTowardsCamera(){ //called when you move forwards or backwards
 		Quaternion _targetRotation =  Quaternion.Euler(_player.transform.rotation.eulerAngles.x, _cameraTrans.rotation.eulerAngles.y, _player.transform.rotation.eulerAngles.z);

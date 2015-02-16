@@ -50,13 +50,18 @@
      <Compile Include="Assets\Code\Player\GroundDetection.cs" />
      <Compile Include="Assets\Code\Player\Mo_Ground.cs" />
      <Compile Include="Assets\Code\Player\Mo_InAir.cs" />
+     <Compile Include="Assets\Code\Player\Mo_Pulling.cs" />
+     <Compile Include="Assets\Code\Player\Mo_Stasis.cs" />
      <Compile Include="Assets\Code\Player\Motion.cs" />
      <Compile Include="Assets\Code\Player\PlayerController.cs" />
      <Compile Include="Assets\Code\Things\Adjective.cs" />
-     <Compile Include="Assets\Code\Things\Adjectives\Large.cs" />
-     <Compile Include="Assets\Code\Things\Adjectives\Normal.cs" />
+     <Compile Include="Assets\Code\Things\MadeOf.cs" />
      <Compile Include="Assets\Code\Things\Thing.cs" />
+     <Compile Include="Assets\Code\UI\InvenAdjUI.cs" />
+     <Compile Include="Assets\Code\UI\TopPanelUI.cs" />
+     <Compile Include="Assets\Code\UI\WorldUI.cs" />
      <Compile Include="Assets\Code\World.cs" />
+     <None Include="Assets\Code\Shaders\TextureChange.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>

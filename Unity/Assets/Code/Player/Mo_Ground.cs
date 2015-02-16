@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Mo_Ground : Motion {
 
+	//This is the primary movement script. it deals with unburdened walking / moving. 
+
 	Vector3 _speed; 
 	bool _canJump; 
 
@@ -13,14 +15,12 @@ public class Mo_Ground : Motion {
 		if (_verticalInput > 0){
 			_speed.z += 5; 
 			//_rigid.AddRelativeForce (new Vector3(0,0,1) * _verticalInput * _acceleration,ForceMode.Acceleration); 
-			LookTowardsCamera(); 
 		}
 	}
 	void MoveBackwards(){ //simlar to forward, this is different because I may want to clamp and have different anims and such
 		if(_verticalInput < 0){
 			_speed.z -= 1; 
 			//_rigid.AddRelativeForce (new Vector3(0,0,1) * _verticalInput * _acceleration,ForceMode.Acceleration); 
-			LookTowardsCamera(); 
 		}
 	}
 	void Strafe(){
@@ -47,13 +47,14 @@ public class Mo_Ground : Motion {
 		else{
 			if(_rigid.velocity.magnitude <= _player.MaxSpeed) { //speed cap
 				_rigid.AddRelativeForce (_speed.normalized * _acceleration, ForceMode.Acceleration); //moves them in their selected direction
+				LookTowardsCamera(); 
 			}
 		}
 	}
 	
 
-	void StartJumpDelay(){
-		_canJump = false; 
+	void StartJumpDelay(){ //these 2 are about making it so the player can't jump repeatedly by holding the button down and getting a fuckton of movement.
+		_canJump = false; //I may want to consider nixing this and 'setting' the verticle component of a jump, or even movement as a whole. 
 		_jumpTime = _time + .5f;
 		_time = 0; 
 	}
@@ -62,6 +63,26 @@ public class Mo_Ground : Motion {
 			_time += Time.fixedDeltaTime;
 			if(_time >= _jumpTime){
 				_canJump = true; 
+			}
+		}
+	}
+
+	void GrabObject(){
+		if (_player.SelectedThing != null) {
+			if(Input.GetKeyDown(KeyCode.E)){ 
+				//cast another ray from the player to the object
+				Ray _ray = new Ray(_player.transform.position,(_player.ThingRayHit.collider.gameObject.transform.position - _player.transform.position).normalized); 
+				RaycastHit _hit;
+				int _mask = ~ (1 << 8); 
+				float _dist = 10000; 
+				if(Physics.Raycast(_ray, out _hit,10,_mask)){
+					_dist = Vector3.Distance(_player.transform.position, _hit.point); 
+				}
+				Debug.Log(_dist); 
+				if(_dist < 2.2f){
+					_player.ThingRayHit = _hit; 
+					_player.EnterState (_player.PullingMo); ; 
+				}
 			}
 		}
 	}
@@ -84,19 +105,18 @@ public class Mo_Ground : Motion {
 	public override void MotionState ()
 	{
 		if (_groundD.IsGrounded() == false) {
-			_player.NowInAir(); 
+			_player.EnterState(_player.InAirMo); 
 		}
+		GrabObject (); 
 	}
 	public override void EnterState ()
 	{
 		_camera.Normal (); 
 		StartJumpDelay ();
-		_player.CurrentState = "Grounded";
 	}
 	public override void ExitState ()
 	{
 		base.ExitState ();
-		_player.LastState = "Grounded"; 
 	}
 	public override void Startup (PlayerController _thePlayer)
 	{

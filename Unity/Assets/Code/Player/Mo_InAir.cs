@@ -12,8 +12,8 @@ public class Mo_InAir : Motion {
 	}
 	void Forward(){ //lets them move forward while they are going forward
 		Vector3 xyVelocity = new Vector3 (_rigid.velocity.x, 0, _rigid.velocity.z); 
-		if (_verticalInput > 0 && _forwardD.IsGrounded() == false && _player.LastState == "ground") {
-			_rigid.AddRelativeForce(new Vector3(0,0,1)*10,ForceMode.Acceleration); 	
+		if (_verticalInput > 0 && !_forwardD.IsGrounded()	) {
+			_rigid.AddRelativeForce(new Vector3(0,0,1)*_acceleration/8,ForceMode.Acceleration); 	
 		}
 	}
 	public override void ControlsInput (){
@@ -31,12 +31,11 @@ public class Mo_InAir : Motion {
 	public override void EnterState ()
 	{
 		_camera.Normal (); 
-		_player.CurrentState = "InAir";
 	}
 	public override void MotionState ()
 	{
 		if (_groundD.IsGrounded()) {
-			_player.NowGrounded(); 
+			_player.EnterState(_player.GroundedMo); 
 		}
 	}
 	protected override void SetAnim ()
@@ -51,6 +50,5 @@ public class Mo_InAir : Motion {
 	public override void ExitState ()
 	{
 		base.ExitState ();
-		_player.LastState = "InAir"; 
 	}
 }

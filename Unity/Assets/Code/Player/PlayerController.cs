@@ -19,6 +19,9 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField]
 	float _turnSpeed; 
 	public float TurnSpeed { get { return _turnSpeed; } }
+	[SerializeField]
+	float _maxPull;
+	public float MaxPull{ get { return _maxPull; } }
 
 	//all the inputs from the player (sans mouse...this might go here later
 	float _verticalInput;
@@ -44,15 +47,33 @@ public class PlayerController : MonoBehaviour {
 
 	//all the states, and hte state they go into
 	Mo_Ground _moGround = new Mo_Ground(); 
-	Mo_InAir _moInAir = new Mo_InAir (); 
+	public Mo_Ground GroundedMo { get { return _moGround; } }
+	Mo_InAir _moInAir = new Mo_InAir ();
+	public Mo_InAir InAirMo { get { return _moInAir; } }
+	Mo_Pulling _moPulling = new Mo_Pulling(); 
+	public Mo_Pulling PullingMo { get { return _moPulling; } }
+	Mo_Stasis _moStasis = new Mo_Stasis (); 
+	public Mo_Stasis StasisMo { get { return _moStasis; } }
 	Motion _move; 
-	string _state; 
-	string _lastState;
-	public string LastState { get { return _lastState; } set { _lastState = value; } }
-	public string CurrentState{ get { return _state; } set { _state = value; } } 
+	public Motion Move { get { return _move; } }
+	Motion _lastState; 
+	public Motion LastState { get { return _lastState; } set { _lastState = value; } }
 
 	//Things and stuff related to things
 	Thing _selectedThing; 
+	public Thing SelectedThing { get { return _selectedThing; } set { _selectedThing = value; } }
+	Thing _pulledThing; 
+	RaycastHit _thingRayHit;
+	public RaycastHit ThingRayHit { get { return _thingRayHit; } set { _thingRayHit = value; } }
+	public Thing PulledThing { get { return _pulledThing; } set { _pulledThing = value; } }
+
+	//Adjective stuff 
+	[SerializeField]
+	GameObject _adjectiveHolder;
+	public GameObject AdjHolder { get { return _adjectiveHolder; } }
+	[SerializeField]
+	List<Adjective> _localAdj = new List<Adjective>();
+	public List<Adjective> LocalAdj { get { return _localAdj; } }
 
 	#endregion
 
@@ -60,55 +81,56 @@ public class PlayerController : MonoBehaviour {
 	//this is the housing for all motion controls
 	//they are broken into different motion classes that are switched to based on conditions.  --------------------------------
 
-	public void NowInAir(){
-		_move.ExitState (); 
-		_move = _moInAir; 
-		_move.EnterState ();
-	}
-
-	public void NowGrounded(){
-		_move.ExitState (); 
-		_move = _moGround; 
+	public void EnterState(Motion _theMove){
+		_move.ExitState ();
+		_move = _theMove;
 		_move.EnterState (); 
 	}
+	public void Pause(){
+		
+	}
+	public void UnPause(){
+		
+	}
+
+
 	#endregion
 
 	#region Thing Interaction
 	//Thing interaction --------------------------------------------
 
 	void Crosshair(){ //raycasts from the center of the screen to find what we are 'looking at'
-		Ray _ray = Camera.main.ScreenPointToRay (_screenCenter); 
-		RaycastHit _hit;
-		if(Physics.Raycast(_ray,out _hit)){
-			Thing _thingFromRay = _hit.collider.gameObject.GetComponent<Thing>(); 
-			if(_thingFromRay != null){
-				SelectTheThing(_thingFromRay); 
+		if(!World.IsPaused){
+			Ray _ray = Camera.main.ScreenPointToRay (_screenCenter); 
+			RaycastHit _hit;
+			if(Physics.Raycast(_ray,out _hit)){
+				Thing _thingFromRay = _hit.collider.gameObject.GetComponent<Thing>(); 
+				SelectTheThing(_thingFromRay, _hit); 
 			}
-			else {
-				SelectTheThing(null); 
+			else{
+				SelectTheThing(null,_hit); 
 			}
-		}
-		else{
-			SelectTheThing(null); 
 		}
 	}
-	void SelectTheThing(Thing _theThing){
+	void SelectTheThing(Thing _theThing, RaycastHit _theHit){
 		if(_theThing != null){ 
-			if(_selectedThing != null){
+			if(_selectedThing != null){ //you are selecting something that isn't null
 				if (_theThing.ID != _selectedThing.ID) { //they are not the same thing
 					_selectedThing.Deselect(); //deselect the old thing 
 					_selectedThing = _theThing;  //select the new one
 					_selectedThing.Select(); 
+					_thingRayHit = _theHit; 
 				}
 			}
 			else {
-				_selectedThing = _theThing;  //select the new one
+				_selectedThing = _theThing;  //It was null before, but now you have a selection
 				_selectedThing.Select(); 
+				_thingRayHit = _theHit;
 			}
 		}
 		else{
-			if(_selectedThing !=null){
-				_selectedThing.Deselect(); 
+			if(_selectedThing !=null){ //If you are now selecting nothing
+				_selectedThing.Deselect();  //and there was something to select before
 				_selectedThing = null;
 			}
 		}
@@ -116,23 +138,62 @@ public class PlayerController : MonoBehaviour {
 
 	void Clicking(){
 		if (Input.GetMouseButtonDown (0)) {
-			if(_selectedThing != null){
-				Debug.Log("clicked an object"); 
-				Adjective.CopyAdjective(World.T.AllAdj[0],_selectedThing.gameObject,0); 
+			if(!World.IsPaused){
+				if(_selectedThing!= null){ //select a thing, and pause the game
+					World.PauseTime(); 
+					WorldUI.ShowThingUI(); 
+					_selectedThing.TurnFullSelected(); 
+				}
+			}
+			else if(_selectedThing != null){ //if the game is paused and you have a thing selected, do the swap
+				World.SwapAdj(); 
 			}
 		}
-		if (Input.GetMouseButtonDown (1)) {
-			if(_selectedThing != null){
-				Debug.Log("clicked an object"); 
-				Adjective.CopyAdjective(World.T.AllAdj[1],_selectedThing.gameObject,0); 
+		if(Input.GetMouseButtonDown (1)){
+			if(World.IsPaused){
+				WorldUI.HideThingUI(); 
+				World.UnPauseTime();
+			}
+			else{
+				WorldUI.ShowInventoryOnly();
+			}
+		}
+		if (Input.GetMouseButtonUp (1)) {
+			if(!World.IsPaused){
+				WorldUI.HideInventoryOnly(); 
 			}
 		}
 	}
+	
+
+
 	void GetCenterOfScreen(){
 		float _x = Screen.width / 2;
 		float _y = Screen.height / 2; 
 		_screenCenter = new Vector3 (_x, _y, 0); 
 	}
+	#endregion
+
+	#region Adjectives
+
+	void GetStartingAdj(){
+		Adjective[] _theAdjs = _adjectiveHolder.GetComponents < Adjective> (); 
+		for(int i = 0; i < _theAdjs.Length ; i++){
+			_localAdj[i] = _theAdjs[i]; 
+		}
+	}
+
+	public Adjective GetAdj(int _slot){ //these 2 are called when replacing an adj on the player. This first bit gives the selected adj
+		return _localAdj [_slot]; 
+	}
+	public void ReplaceAdjOnPlayer(int _slot, Adjective _theAdj){
+		if(_localAdj[_slot] != null){
+			Destroy (_localAdj [_slot]); 
+		}
+		_localAdj [_slot] = _theAdj; 
+	}
+
+
 	#endregion
 
 	#region Start Update n such
@@ -149,9 +210,11 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
 		_moGround.Startup (this); 
 		_moInAir.Startup (this); 
+		_moPulling.Startup (this); 
 		_move = _moGround; 
 		_move.EnterState (); 
 		GetCenterOfScreen (); 
+		GetStartingAdj (); 
 	}
 	void FixedUpdate () {
 		_move.ControlsEffect (); //calls has the effects of physics stuff happen
