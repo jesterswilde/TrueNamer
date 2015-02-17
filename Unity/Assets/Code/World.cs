@@ -16,13 +16,14 @@ public class World : MonoBehaviour {
 	
 	Adjective[] _theAdjectives; 
 	public Adjective[] AllAdj { get { return _theAdjectives; } }
-	[SerializeField]
-	Color _selectedLerpColor; 
-	public static Color SelectedColor; 
 	static bool _isPaused = false;
 	public static bool IsPaused { get { return _isPaused; } }
 	static bool _oneFrameForward = false; 
 	static float _frameForwardTimer = 0; 
+
+	[SerializeField] 
+	GameObject _adjParent; 
+	Dictionary<string,Adjective> _baseAdjs = new Dictionary<string, Adjective> (); 
 
 	[SerializeField]
 	int _chaos;
@@ -32,6 +33,41 @@ public class World : MonoBehaviour {
 
 	static int _id = 0; 
 
+
+
+	public void UpdateAdjList(){
+		_baseAdjs.Clear (); 
+		Adjective[] _theAdjs = _adjParent.GetComponentsInChildren<Adjective> (); 
+		foreach (Adjective _adj in _theAdjs) {
+			_baseAdjs.Add(_adj.adjName,_adj);
+		}
+	}
+	public void UpdateAllAdjs(){
+		UpdateAdjList (); 
+		Adjective[] _theAdjs = FindObjectsOfType<Adjective> (); 
+		foreach (Adjective _adj in _theAdjs) {
+			if(_adj.transform.parent != _adjParent.transform){
+				Adjective _originalAdj = _baseAdjs[_adj.adjName]; 
+				if(_originalAdj == null){
+					Debug.Log ("You have an adjective name does not match a base adjective on the object  " + _adj.gameObject.name); 
+				}
+				else{
+					Adjective.CopyValues(_originalAdj,_adj); 
+				}
+			}
+		}
+	}
+	public void UpdateAllThings(){
+		Thing[] _theThings = FindObjectsOfType<Thing> (); 
+		foreach (Thing _thing in _theThings) {
+			_thing.ClearAdjList(); 		
+		}
+		MadeOfGameStart (); 
+		AdjectivesInGameStart (); 
+		foreach (Thing _thing in _theThings) {
+			_thing.UpdateThing(); 		
+		}
+	}
 	void AdjectivesInGameStart(){
 		_theAdjectives = GetComponentsInChildren<Adjective> (); 
 		Adjective[] _allAdjectives = FindObjectsOfType (typeof(Adjective)) as Adjective[]; 
@@ -106,7 +142,6 @@ public class World : MonoBehaviour {
 				} else
 						Debug.Log ("Hook the camera up to the world node homie homie G"); 
 		T = this;  
-		SelectedColor = _selectedLerpColor; 
 		Chaos = Mathf.Clamp ( _chaos,0,10); 
 		MadeOfGameStart (); 
 	}

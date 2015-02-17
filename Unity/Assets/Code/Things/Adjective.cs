@@ -24,6 +24,7 @@ public class Adjective : MonoBehaviour {
 		_theThing.Friction *= friction;
 		_theThing.Density *= density; 
 		_theThing.Stability *= stability; 
+		Debug.Log (_theThing.Scale);
 		_theThing.Scale *= scale; 
 	}
 
@@ -35,6 +36,7 @@ public class Adjective : MonoBehaviour {
 	public virtual void GameStart(){
 		_theThing = GetComponent<Thing> (); 
 		if (_theThing != null) {
+
 			_theThing.AddAdjective(this); 
 		}
 	}
@@ -87,5 +89,14 @@ public class Adjective : MonoBehaviour {
 			return copy;
 		}
 		return null; 
+	}
+	public static void CopyValues(Adjective original, Adjective destination)
+	{
+		// Copied fields can be restricted with BindingFlags
+		System.Reflection.FieldInfo[] fields = typeof(Adjective).GetFields(); 
+		foreach (System.Reflection.FieldInfo field in fields)
+		{
+			field.SetValue(destination, field.GetValue(original));
+		}
 	}
 }

@@ -1,13 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\..\..\..\1GAM\Game_4\BanditSim2015\Unity\Assets\Code\UI\SpecificLocationUI.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Code\World.cs">
     <Files>
-      <File FileName="..\..\..\..\..\..\1GAM\Game_4\BanditSim2015\Unity\Unity.sln" Line="1" Column="1" />
-      <File FileName="..\..\..\..\..\..\1GAM\Game_4\BanditSim2015\Unity\Assets\Code\UI\SpecificLocationUI.cs" Line="1" Column="1" />
-      <File FileName="Assets\Code\UI\InvenAdjUI.cs" Line="73" Column="22" />
-      <File FileName="Assets\Code\UI\TopPanelUI.cs" Line="1" Column="1" />
+      <File FileName="Assets\Code\World.cs" Line="54" Column="47" />
+      <File FileName="Assets\Code\UI\TopPanelUI.cs" Line="57" Column="19" />
+      <File FileName="Assets\Code\UI\InvenAdjUI.cs" Line="1" Column="1" />
       <File FileName="Assets\Code\UI\WorldUI.cs" Line="1" Column="1" />
-      <File FileName="Assets\Code\Things\Adjective.cs" Line="1" Column="1" />
+      <File FileName="Assets\Code\Things\Adjective.cs" Line="96" Column="4" />
       <File FileName="Assets\Code\Things\Thing.cs" Line="1" Column="1" />
       <File FileName="Assets\Code\Player\PlayerController.cs" Line="1" Column="1" />
       <File FileName="Assets\Code\Things\MadeOf.cs" Line="1" Column="1" />
@@ -15,7 +14,6 @@
       <File FileName="k:\FX_TDT\GameProjects\Projects\TrueNamer\TrueNamer\Unity\Assets\Code\Player\Mo_Ground.cs" Line="1" Column="1" />
       <File FileName="k:\FX_TDT\GameProjects\Projects\TrueNamer\TrueNamer\Unity\Assets\Code\Player\Mo_InAir.cs" Line="1" Column="1" />
       <File FileName="k:\FX_TDT\GameProjects\Projects\TrueNamer\TrueNamer\Unity\Assets\Code\Player\Mo_Pulling.cs" Line="1" Column="1" />
-      <File FileName="Assets\Code\World.cs" Line="1" Column="1" />
       <File FileName="k:\FX_TDT\GameProjects\Projects\TrueNamer\TrueNamer\Unity\Assets\Code\Player\Motion.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>

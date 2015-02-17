@@ -88,6 +88,18 @@ public class Thing : MonoBehaviour {
 
 	#region Update Thing Routine
 	public void UpdateThing(){  //Called every time you change the adjectives of a thing
+		if(_rigid == null){
+			_rigid = GetComponent<Rigidbody> (); 
+		}
+		if(_meshes == null){
+			_meshes = GetComponentsInChildren<Renderer> (); 
+		}
+		if(_renderer == null){
+			_renderer =  GetComponent<MeshRenderer> ();
+		}
+		if(_startScale == 0){
+			_startScale = transform.localScale.x; 
+		}
 		ResetThingToBase ();  //first we set all the variables to their starting state
 		foreach (Adjective _adj in _localAdj) { //then we go through all variables and have them do their modification
 			_adj.ModifyThing();
@@ -98,6 +110,9 @@ public class Thing : MonoBehaviour {
 		if(World.IsPaused){
 			World.StepForwardOneFrame (); 
 		}
+	}
+	public void ClearAdjList(){
+		_localAdj.Clear (); 
 	}
 	void ResetThingToBase(){
 		_modMass = _mass; 
@@ -118,13 +133,11 @@ public class Thing : MonoBehaviour {
 		}
 	}
 	void ApplyScaleMod(){
-		if (_modScale != _scale || transform.localScale.x != _modScale) {
-			_isShunting = true; 
-			PhysicsSleep(); 
-			ShuntObjects(); 
-			transform.localScale = new Vector3(_modScale*_startScale,_modScale*_startScale,_modScale*_startScale); 
-			_rigid.WakeUp(); 
-		}
+		_isShunting = true; 
+		PhysicsSleep(); 
+		ShuntObjects(); 
+		transform.localScale = new Vector3(_modScale*_startScale,_modScale*_startScale,_modScale*_startScale); 
+		_rigid.WakeUp(); 
 	}
 	#endregion
 
@@ -379,12 +392,20 @@ public class Thing : MonoBehaviour {
 
 	#region Start and Update
 	void Awake(){
-		_rigid = GetComponent<Rigidbody> (); 
-		_meshes = GetComponentsInChildren<Renderer> (); 
-		_renderer =  GetComponent<MeshRenderer> ();
+		if(_rigid == null){
+			_rigid = GetComponent<Rigidbody> (); 
+		}
+		if(_meshes == null){
+			_meshes = GetComponentsInChildren<Renderer> (); 
+		}
+		if(_renderer == null){
+			_renderer =  GetComponent<MeshRenderer> ();
+		}
 		if(_startScale == 0){
 			_startScale = transform.localScale.x; 
 		}
+		ClearAdjList (); 
+		ResetThingToBase (); 
 	}
 	void Start(){
 		_position = transform.position; 
