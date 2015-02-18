@@ -95,7 +95,11 @@ public class PlayerController : MonoBehaviour {
 	public void UnPause(){
 		
 	}
-
+	void OnCollisionEnter(Collision _other){
+		if(_velocity.y > 0){
+			_rigid.velocity = new Vector3(_rigid.velocity.x, _velocity.y,_rigid.velocity.z);  //THis preserves up and down momentum on collision
+		}
+	}
 
 	#endregion
 

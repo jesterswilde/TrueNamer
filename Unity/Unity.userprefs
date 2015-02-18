@@ -1,15 +1,16 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Code\Player\Mo_InAir.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Code\Player\Mo_Ground.cs">
     <Files>
-      <File FileName="k:\FX_TDT\GameProjects\Projects\TrueNamer\TrueNamer\Unity\Assets\Code\Player\Mo_Pulling.cs" Line="68" Column="32" />
+      <File FileName="Assets\Code\Player\PlayerController.cs" Line="24" Column="53" />
+      <File FileName="k:\FX_TDT\GameProjects\Projects\TrueNamer\TrueNamer\Unity\Assets\Code\Player\Mo_Pulling.cs" Line="1" Column="1" />
       <File FileName="k:\FX_TDT\GameProjects\Projects\TrueNamer\TrueNamer\Unity\Assets\Code\Player\Motion.cs" Line="1" Column="1" />
       <File FileName="Assets\Editor\EditWorld.cs" Line="1" Column="1" />
       <File FileName="Assets\ShroudPlugin\Readme.txt" Line="1" Column="1" />
       <File FileName="Assets\Code\Player\Mo_InAir.cs" Line="27" Column="26" />
-      <File FileName="Assets\Code\Things\Thing.cs" Line="30" Column="18" />
-      <File FileName="Assets\Code\Player\Mo_Ground.cs" Line="8" Column="2" />
-      <File FileName="Assets\Code\Player\PlayerController.cs" Line="21" Column="53" />
+      <File FileName="Assets\Code\Things\Thing.cs" Line="331" Column="42" />
+      <File FileName="Assets\Code\Player\Mo_Ground.cs" Line="21" Column="19" />
+      <File FileName="Assets\Code\Things\Adjective.cs" Line="26" Column="37" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

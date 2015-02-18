@@ -12,15 +12,13 @@ public class Mo_Ground : Motion {
 	float _jumpTime; 
 
 	void MoveForward(){ //controls when they move forward. This whole script should be broken up into different states.
-		if (_verticalInput > 0){
+		if (_verticalInput > 0 &&  !_forwardD.IsGrounded()){
 			_speed.z += 5; 
-			//_rigid.AddRelativeForce (new Vector3(0,0,1) * _verticalInput * _acceleration,ForceMode.Acceleration); 
 		}
 	}
 	void MoveBackwards(){ //simlar to forward, this is different because I may want to clamp and have different anims and such
 		if(_verticalInput < 0){
 			_speed.z -= 1; 
-			//_rigid.AddRelativeForce (new Vector3(0,0,1) * _verticalInput * _acceleration,ForceMode.Acceleration); 
 		}
 	}
 	void Strafe(){
@@ -47,7 +45,8 @@ public class Mo_Ground : Motion {
 		else{
 			LookTowardsCamera(); 
 			_rigid.AddRelativeForce (_speed.normalized * _acceleration, ForceMode.Acceleration); //moves them in their selected direction
-			float _mag = Mathf.Clamp(_rigid.velocity.magnitude,0,_player.MaxSpeed); 
+			Vector3 _xz = new Vector3(_rigid.velocity.x,0,_rigid.velocity.z); 
+			float _mag = Mathf.Clamp(_xz.magnitude,0,_player.MaxSpeed); 
 			Vector3 _horizontal = ((_player.transform.forward *_speed.z) + (_player.transform.right *_speed.x)).normalized  * _mag;
 			_rigid.velocity = new Vector3(_horizontal.x, _rigid.velocity.y,_horizontal.z) ;
 		}
@@ -56,7 +55,7 @@ public class Mo_Ground : Motion {
 
 	void StartJumpDelay(){ //these 2 are about making it so the player can't jump repeatedly by holding the button down and getting a fuckton of movement.
 		_canJump = false; //I may want to consider nixing this and 'setting' the verticle component of a jump, or even movement as a whole. 
-		_jumpTime = _time + .5f;
+		_jumpTime = .2f;
 		_time = 0; 
 	}
 	void JumpTimer(){

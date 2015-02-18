@@ -24,7 +24,6 @@ public class Adjective : MonoBehaviour {
 		_theThing.Friction *= friction;
 		_theThing.Density *= density; 
 		_theThing.Stability *= stability; 
-		Debug.Log (_theThing.Scale);
 		_theThing.Scale *= scale; 
 	}
 
