@@ -4,28 +4,38 @@ using System.Collections;
 public class Mo_InAir : Motion {
 
 	float _targetWeight; 
+	Vector3 _speed; 
 
 	void HeavyGravity(){ //increses gravity
 		if(_rigid.velocity.normalized.y < -.1f || _rigid.velocity.normalized.y > .1f ){
 			_rigid.AddForce (Physics.gravity*1f, ForceMode.Acceleration); 
 		}
 	}
-	void Forward(){ //lets them move forward while they are going forward
-		Vector3 xyVelocity = new Vector3 (_rigid.velocity.x, 0, _rigid.velocity.z); 
-		if (_verticalInput > 0 && !_forwardD.IsGrounded()	) {
-			_rigid.AddRelativeForce(new Vector3(0,0,1)*_acceleration/8,ForceMode.Acceleration); 	
-		}
+
+	
+	void MoveForward(){ //controls when they move forward. This whole script should be broken up into different states.
+		_speed.z =  _verticalInput; 
+	}
+	void Strafe(){
+		_speed.x += _horizontalInput; 
+	}
+
+	void InAirMove(){ //lets them move forward while they are going forward
+		_rigid.AddRelativeForce(_speed*_player.AirSpeed ,ForceMode.Acceleration); 	
 	}
 	public override void ControlsInput (){
+		_speed = Vector3.zero; 
 		base.ControlsInput ();
 		HeavyGravity (); 
-		Forward (); 
+		MoveForward ();
+		Strafe (); 
+		InAirMove (); 
 	}
 
 	public override void ControlsEffect ()
 	{
 		base.ControlsEffect ();
-		Forward (); 
+		InAirMove (); 
 
 	}
 	public override void EnterState ()

@@ -45,10 +45,11 @@ public class Mo_Ground : Motion {
 			_rigid.velocity = Vector3.zero;  	
 		}
 		else{
-			if(_rigid.velocity.magnitude <= _player.MaxSpeed) { //speed cap
-				_rigid.AddRelativeForce (_speed.normalized * _acceleration, ForceMode.Acceleration); //moves them in their selected direction
-				LookTowardsCamera(); 
-			}
+			LookTowardsCamera(); 
+			_rigid.AddRelativeForce (_speed.normalized * _acceleration, ForceMode.Acceleration); //moves them in their selected direction
+			float _mag = Mathf.Clamp(_rigid.velocity.magnitude,0,_player.MaxSpeed); 
+			Vector3 _horizontal = ((_player.transform.forward *_speed.z) + (_player.transform.right *_speed.x)).normalized  * _mag;
+			_rigid.velocity = new Vector3(_horizontal.x, _rigid.velocity.y,_horizontal.z) ;
 		}
 	}
 	

@@ -17,6 +17,9 @@ public class PlayerController : MonoBehaviour {
 	float _jumpPower; 
 	public float JumpPower { get { return _jumpPower; } }
 	[SerializeField]
+	float _airSpeed;
+	public float AirSpeed { get { return _airSpeed; } }
+	[SerializeField]
 	float _turnSpeed; 
 	public float TurnSpeed { get { return _turnSpeed; } }
 	[SerializeField]
