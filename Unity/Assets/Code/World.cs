@@ -35,18 +35,18 @@ public class World : MonoBehaviour {
 
 
 
-	public void UpdateAdjList(){
-		_baseAdjs.Clear (); 
+	public void UpdateAdjList(){ //This updates the 'base' adjectives. THey are children of hte world game object.
+		_baseAdjs.Clear ();  //THey are used as reference for all other adjectives
 		Adjective[] _theAdjs = _adjParent.GetComponentsInChildren<Adjective> (); 
 		foreach (Adjective _adj in _theAdjs) {
 			_baseAdjs.Add(_adj.adjName,_adj);
 		}
 	}
-	public void UpdateAllAdjs(){
+	public void UpdateAllAdjs(){ //This goes through all adjectives and sets the to be the same as the 'base' adjectives
 		UpdateAdjList (); 
 		Adjective[] _theAdjs = FindObjectsOfType<Adjective> (); 
 		foreach (Adjective _adj in _theAdjs) {
-			if(_adj.transform.parent != _adjParent.transform){
+			if(_adj.transform.parent != _adjParent.transform){ //If they are not a child of the _adjParent, they are not a base adjective
 				Adjective _originalAdj = _baseAdjs[_adj.adjName]; 
 				if(_originalAdj == null){
 					Debug.Log ("You have an adjective name does not match a base adjective on the object  " + _adj.gameObject.name); 
@@ -57,7 +57,10 @@ public class World : MonoBehaviour {
 			}
 		}
 	}
-	public void UpdateAllThings(){
+	public void UpdateAllThings(){ //This goes through and applies adjectives to things. Used in editor. 
+		if (World.T == null) {
+			World.T = this; 
+		}
 		Thing[] _theThings = FindObjectsOfType<Thing> (); 
 		foreach (Thing _thing in _theThings) {
 			_thing.ClearAdjList(); 		
@@ -75,8 +78,11 @@ public class World : MonoBehaviour {
 			_adj.GameStart(); 
 		}
 	}
+	static void MadeOfGameStart(){
+		_allMadeOfs = World.T.GetComponentsInChildren<MadeOf> (); 
+	}
 
-	public static MadeOf WhatAmIMadeOf(Thing _theThing){
+	public static MadeOf WhatAmIMadeOf(Thing _theThing){ //iterates through all 'made ofs' and finds out which one a thing is 'closest' to
 		int _index = 0; 
 		float _distance = 100000000; 
 		for(int i = 0; i < _allMadeOfs.Length;i++){
@@ -98,10 +104,6 @@ public class World : MonoBehaviour {
 	public static void UnPauseTime(){
 		Time.timeScale = 1; 
 		_isPaused = false; 
-	}
-
-	void MadeOfGameStart(){
-		_allMadeOfs = GetComponentsInChildren<MadeOf> (); 
 	}
 
 	public static int GetID(){

@@ -7,7 +7,7 @@ public class Adjective : MonoBehaviour {
 	public string adjName; 
 	public Sprite symbol; 
 	public Color adjTint; 
-
+	
 	public float scale = 1; 
 	public float density = 1;
 	public float stability = 1; 
@@ -35,7 +35,6 @@ public class Adjective : MonoBehaviour {
 	public virtual void GameStart(){
 		_theThing = GetComponent<Thing> (); 
 		if (_theThing != null) {
-
 			_theThing.AddAdjective(this); 
 		}
 	}

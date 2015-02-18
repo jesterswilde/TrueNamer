@@ -10,10 +10,9 @@ public class Thing : MonoBehaviour {
 	float _mass = 1;
 	float _modMass; 
 	public float Mass{get{return _modMass;}set{ _modMass = value;}}
-	[SerializeField]
-	float _scale = 1;
 	float _modScale;
-	float _startScale; 
+	Vector3 _startScale; 
+	bool _shouldSetStartScale = true; 
 	public float Scale {get{return _modScale;} set{ _modScale = value;}}
 	[SerializeField]
 	float _density = 1; 
@@ -100,16 +99,19 @@ public class Thing : MonoBehaviour {
 		if(_renderer == null){
 			_renderer =  GetComponent<MeshRenderer> ();
 		}
-		if(_startScale == 0){
-			_startScale = transform.localScale.x; 
+		if(_shouldSetStartScale){
+			_startScale = transform.localScale; 
+			_shouldSetStartScale = false; 
 		}
 		ResetThingToBase ();  //first we set all the variables to their starting state
 		foreach (Adjective _adj in _localAdj) { //then we go through all variables and have them do their modification
 			_adj.ModifyThing();
 		}
 		ApplyAdjectives (); //we then change the thing to reflect it's new state
-		_madeOf = World.WhatAmIMadeOf (this); 
-		ApplyMadeOf (); 
+		if(World.T != null){
+			_madeOf = World.WhatAmIMadeOf (this); 
+			ApplyMadeOf (); 
+		}
 		if(World.IsPaused){
 			World.StepForwardOneFrame (); 
 		}
@@ -119,7 +121,7 @@ public class Thing : MonoBehaviour {
 	}
 	void ResetThingToBase(){
 		_modMass = _mass; 
-		_modScale = _scale; 
+		_modScale = 1; 
 		_modDensity = _density;
 		_modStability = _stability;
 		_modFriction = _friction; 
@@ -135,13 +137,39 @@ public class Thing : MonoBehaviour {
 			_childRend.material = _madeOf.Mat; 
 		}
 	}
-	void ApplyScaleMod(){
+	void ApplyScaleMod(){ //applies the scale modfications, and does the physics for it. 
 		_isShunting = true; 
 		PhysicsSleep(); 
 		ShuntObjects(); 
-		transform.localScale = new Vector3(_modScale*_startScale,_modScale*_startScale,_modScale*_startScale); 
+		transform.localScale = _modScale*_startScale; 
 		_rigid.WakeUp(); 
 	}
+	public void RemoveAdjectiveInfluence(){ //this is used as a button for the designer, so they can modify the base scale. 
+		Debug.Log (_startScale + " | " + _shouldSetStartScale); 
+		_shouldSetStartScale = true; 
+		ClearAdjList (); 
+		_madeOf = null; 
+		transform.localScale = _startScale; 
+	}
+	public void SetAsModifiedScale(){
+		Debug.Log (_startScale); 
+		Vector3 _theScale = transform.localScale; 
+		foreach (Adjective _adj in _localAdj) {
+			_theScale /= _adj.scale; 
+		}
+		_startScale = _theScale; 
+		_shouldSetStartScale = false; 
+		Debug.Log (_startScale); 
+	}
+	public void ApplyLocalAdjectives(){ //If you want to just update this one thing. 
+		Adjective[] _adjs = GetComponents<Adjective> (); 
+		ClearAdjList (); 
+		foreach (Adjective _adj in _adjs) {
+			_adj.GameStart(); 
+		}
+		UpdateThing (); 
+	}
+
 	#endregion
 
 	#region Visual Indicators of stuff happening
@@ -404,8 +432,9 @@ public class Thing : MonoBehaviour {
 		if(_renderer == null){
 			_renderer =  GetComponent<MeshRenderer> ();
 		}
-		if(_startScale == 0){
-			_startScale = transform.localScale.x; 
+		if(_shouldSetStartScale){
+			_startScale = transform.localScale; 
+			_shouldSetStartScale = false; 
 		}
 		ClearAdjList (); 
 		ResetThingToBase (); 
