@@ -47,7 +47,14 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Editor\EditWorld.cs" />
+     <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-Bumped.shader" />
      <None Include="Assets\Code\Shaders\TextureChange.shader" />
+     <None Include="Assets\ShroudPlugin\Readme.txt" />
+     <None Include="Assets\ShroudPlugin\Samples\Shroud Files\PerfTest_Export.cwf.txt" />
+     <None Include="Assets\ShroudPlugin\Samples\Shroud Files\Flag_Export.cwf.txt" />
+     <None Include="Assets\ShroudPlugin\Samples\Shroud Files\HairBall_Export.cwf.txt" />
+     <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-BumpSpec.shader" />
+     <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-Diffuse.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>

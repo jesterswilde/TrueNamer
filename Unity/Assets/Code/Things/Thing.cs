@@ -19,12 +19,15 @@ public class Thing : MonoBehaviour {
 	float _density = 1; 
 	float _modDensity; 
 	public float Density { get { return _modDensity; } set { _modDensity = value; } }
+	[SerializeField]
 	float _stability = 1; 
 	float _modStability; 
 	public float Stability { get { return _modStability; } set { _modStability = value; } }
+	[SerializeField]
 	float _friction = 1;
 	float _modFriction; 
 	public float Friction { get { return _modFriction; } set { _modFriction = value; } }
+	[SerializeField]
 	float _life = 1; 
 	float _modLife;
 	public float Life { get { return _modLife; } set { _modLife = value; } }

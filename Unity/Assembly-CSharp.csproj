@@ -61,7 +61,16 @@
      <Compile Include="Assets\Code\UI\TopPanelUI.cs" />
      <Compile Include="Assets\Code\UI\WorldUI.cs" />
      <Compile Include="Assets\Code\World.cs" />
+     <Compile Include="Assets\ShroudPlugin\Scripts\ShroudInstance.cs" />
+     <Compile Include="Assets\ShroudPlugin\Scripts\ShroudObjectManager.cs" />
+     <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-Bumped.shader" />
      <None Include="Assets\Code\Shaders\TextureChange.shader" />
+     <None Include="Assets\ShroudPlugin\Readme.txt" />
+     <None Include="Assets\ShroudPlugin\Samples\Shroud Files\PerfTest_Export.cwf.txt" />
+     <None Include="Assets\ShroudPlugin\Samples\Shroud Files\Flag_Export.cwf.txt" />
+     <None Include="Assets\ShroudPlugin\Samples\Shroud Files\HairBall_Export.cwf.txt" />
+     <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-BumpSpec.shader" />
+     <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-Diffuse.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>
