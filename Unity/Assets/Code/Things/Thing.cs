@@ -11,6 +11,7 @@ public class Thing : MonoBehaviour {
 	float _modMass; 
 	public float Mass{get{return _modMass;}set{ _modMass = value;}}
 	float _modScale;
+	[SerializeField, HideInInspector]
 	Vector3 _startScale; 
 	bool _shouldSetStartScale = true; 
 	public float Scale {get{return _modScale;} set{ _modScale = value;}}
