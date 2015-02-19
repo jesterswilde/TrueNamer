@@ -122,6 +122,7 @@ public class Thing : MonoBehaviour {
 	}
 	void ResetThingToBase(){
 		_modMass = _mass; 
+		_rigid.mass = _modMass;
 		_modScale = 1; 
 		_modDensity = _density;
 		_modStability = _stability;
@@ -130,7 +131,6 @@ public class Thing : MonoBehaviour {
 	}
 	void ApplyAdjectives(){ //some Adjectives are more than a boolean. In that case, this will call the list of functions
 		ApplyScaleMod (); 
-		_rigid.mass = _modMass; 
 	}
 	void ApplyMadeOf(){ //setting the materials, other things may happen here later. 
 		_renderer.material = _madeOf.Mat; 
@@ -143,6 +143,9 @@ public class Thing : MonoBehaviour {
 		PhysicsSleep(); 
 		ShuntObjects(); 
 		transform.localScale = _modScale*_startScale; 
+		Debug.Log (_mass + " | " + _modScale); 
+		_rigid.mass = _mass *_modScale *_modScale *_modScale; 
+		Debug.Log (_rigid.mass); 
 		_rigid.WakeUp(); 
 	}
 
@@ -151,16 +154,19 @@ public class Thing : MonoBehaviour {
 		ClearAdjList (); 
 		_madeOf = null; 
 		transform.localScale = _startScale; 
+		_rigid.mass = _mass; 
 	}
 	public void SetAsModifiedScale(){
 		Debug.Log (_startScale); 
+		float _tempMass = _rigid.mass; 
 		Vector3 _theScale = transform.localScale; 
 		foreach (Adjective _adj in _localAdj) {
 			_theScale /= _adj.scale; 
+			_tempMass /= (_adj.scale*_adj.scale*_adj.scale); 
 		}
 		_startScale = _theScale; 
+		_mass =_tempMass; 
 		_shouldSetStartScale = false; 
-		Debug.Log (_startScale); 
 	}
 	public void ApplyLocalAdjectives(){ //If you want to just update this one thing. 
 		Adjective[] _adjs = GetComponents<Adjective> (); 
