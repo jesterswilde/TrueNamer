@@ -71,6 +71,13 @@ public class World : MonoBehaviour {
 			_thing.UpdateThing(); 		
 		}
 	}
+
+	void ThingStartGame(){
+		Thing[] _allThings = FindObjectsOfType<Thing>(); 
+		foreach (Thing _thing in _allThings){
+			_thing.StartGame(); 
+		}
+	}
 	void AdjectivesInGameStart(){
 		_theAdjectives = GetComponentsInChildren<Adjective> (); 
 		Adjective[] _allAdjectives = FindObjectsOfType (typeof(Adjective)) as Adjective[]; 
@@ -148,7 +155,8 @@ public class World : MonoBehaviour {
 		MadeOfGameStart (); 
 	}
 	void Start(){
-		AdjectivesInGameStart (); 
+		ThingStartGame (); 
+		//AdjectivesInGameStart (); 
 		GameSettings (); 
 	}
 	void Update(){

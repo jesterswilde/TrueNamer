@@ -145,8 +145,8 @@ public class Thing : MonoBehaviour {
 		transform.localScale = _modScale*_startScale; 
 		_rigid.WakeUp(); 
 	}
+
 	public void RemoveAdjectiveInfluence(){ //this is used as a button for the designer, so they can modify the base scale. 
-		Debug.Log (_startScale + " | " + _shouldSetStartScale); 
 		_shouldSetStartScale = true; 
 		ClearAdjList (); 
 		_madeOf = null; 
@@ -166,9 +166,15 @@ public class Thing : MonoBehaviour {
 		Adjective[] _adjs = GetComponents<Adjective> (); 
 		ClearAdjList (); 
 		foreach (Adjective _adj in _adjs) {
-			_adj.GameStart(); 
+			if(!_localAdj.Contains(_adj)){
+				_localAdj.Add(_adj); 
+			}
 		}
 		UpdateThing (); 
+	}
+	public void StartGame(){
+		RemoveAdjectiveInfluence (); 
+		ApplyLocalAdjectives (); 
 	}
 
 	#endregion
@@ -423,31 +429,12 @@ public class Thing : MonoBehaviour {
 	#endregion
 
 	#region Start and Update
-	void Awake(){
-		if(_rigid == null){
-			_rigid = GetComponent<Rigidbody> (); 
-		}
-		if(_meshes == null){
-			_meshes = GetComponentsInChildren<Renderer> (); 
-		}
-		if(_renderer == null){
-			_renderer =  GetComponent<MeshRenderer> ();
-		}
-		if(_shouldSetStartScale){
-			_startScale = transform.localScale; 
-			_shouldSetStartScale = false; 
-		}
-		ClearAdjList (); 
-		ResetThingToBase (); 
-	}
 	void Start(){
 		_position = transform.position; 
 		_rotation = transform.rotation; 
 
-		UpdateThing (); 
 		_id = World.GetID (); 
-		_startingColor = Color.white; 
-		_startinMaterial = _renderer.material; 
+
 
 	}
 	void Update(){

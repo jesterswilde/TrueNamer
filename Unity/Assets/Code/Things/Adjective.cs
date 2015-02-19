@@ -20,6 +20,9 @@ public class Adjective : MonoBehaviour {
 
 
 	public virtual void ModifyThing(){
+		if(_theThing == null){
+			_theThing = GetComponent<Thing> (); 
+		}
 		_theThing.Life *= life; 
 		_theThing.Friction *= friction;
 		_theThing.Density *= density; 
@@ -27,20 +30,13 @@ public class Adjective : MonoBehaviour {
 		_theThing.Scale *= scale; 
 	}
 
-	protected virtual void Startup(){
-		if(_theThing == null){
-			_theThing = GetComponent<Thing> (); 
-		}
-	}
 	public virtual void GameStart(){
 		_theThing = GetComponent<Thing> (); 
 		if (_theThing != null) {
 			_theThing.AddAdjective(this); 
 		}
 	}
-	void Start(){
-		Startup (); 
-	}
+
 
 
 
@@ -60,9 +56,6 @@ public class Adjective : MonoBehaviour {
 		Adjective _theAdj = CopyComponent (original, destination) as Adjective; 
 		Thing _theThing = destination.GetComponent<Thing> (); 
 		if(_theThing != null){
-			if(_theAdj != null){
-				_theAdj.Startup (); 
-			}
 			_theThing.SwapAdjectives(_theAdj,slot); 
 		}
 		else{ //we are assuming if the object doesn't have a thing component, then it's the player

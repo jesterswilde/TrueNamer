@@ -79,7 +79,7 @@ public class Mo_Ground : Motion {
 					_dist = Vector3.Distance(_player.transform.position, _hit.point); 
 				}
 				Debug.Log(_dist); 
-				if(_dist < 2.2f){
+				if(_dist < 2.2f && _hit.collider.gameObject.GetComponent<Rigidbody>().mass < _player.MaxPull){
 					_player.ThingRayHit = _hit; 
 					_player.EnterState (_player.PullingMo); ; 
 				}
