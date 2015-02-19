@@ -24,6 +24,9 @@ public class MadeOf : MonoBehaviour {
 	[SerializeField]
 	bool _bouncy = false;
 	public bool IsBouncy {get{return _bouncy;} set{ _bouncy = value;}}
+	[SerializeField]
+	float _bounceAmount = .7f; 
+	public float BounceAmount { get { return _bounceAmount; } }
 	[SerializeField] 
 	float _fragility = 1; 
 	public float Fragility { get { return _fragility; } set { _fragility = value; } }

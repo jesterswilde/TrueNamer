@@ -12,7 +12,7 @@ public class Thing : MonoBehaviour {
 	public float Mass{get{return _modMass;}set{ _modMass = value;}}
 	float _modScale;
 	[SerializeField, HideInInspector]
-	Vector3 _startScale; 
+	Vector3 _startScale = new Vector3 (1, 1, 1); 
 	bool _shouldSetStartScale = true; 
 	public float Scale {get{return _modScale;} set{ _modScale = value;}}
 	[SerializeField]
@@ -268,16 +268,27 @@ public class Thing : MonoBehaviour {
 	public void MakePhysicsNotKinematic(){
 		_rigid.isKinematic = false; 
 	}
+	float BounceFactor(Thing _otherThing){
+		float _otherBounce = 0; 
+		float _thisBounce = 0; 
+		if(_otherThing.MadeFrom.IsBouncy) 
+						_otherBounce = _otherThing.MadeFrom.BounceAmount;
+		if (_madeOf.IsBouncy)
+						_thisBounce = _madeOf.BounceAmount;
+		if (_otherBounce > _thisBounce)
+						return _otherBounce;
+				else
+						return _thisBounce;
+	}
 	public void GetBounced(Collision _theCollision, Thing _otherThing){ //when 2 things collide with eachother, and at least one is bouncy
 		if(!_isKinematic){
-			if (_madeOf.IsBouncy || _otherThing.MadeFrom.IsBouncy) {
-				if(_velocity.magnitude > 7 || _otherThing.Velocity.magnitude > 7){ //Only bounce at above certain speeds
-					_isKinematic = true; 
-					_kinamticTimer = 0; 
-					RotationSleep(); 
-					_rigid.velocity = Vector3.Reflect(_velocity,_theCollision.contacts[0].normal) *.8f; 
-					EliminateLandingChaos(); 
-				}
+			float _bounceAmount = BounceFactor(_otherThing); 
+			if(_velocity.magnitude > 7 || _otherThing.Velocity.magnitude > 7 && _bounceAmount > 0){ //Only bounce at above certain speeds
+				_isKinematic = true; 
+				_kinamticTimer = 0; 
+				RotationSleep(); 
+				_rigid.velocity = Vector3.Reflect(_velocity,_theCollision.contacts[0].normal) * _bounceAmount; 
+				EliminateLandingChaos(); 
 			}
 		}
 	}
