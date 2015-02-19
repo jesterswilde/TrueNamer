@@ -26,7 +26,7 @@ public class PlayerController : MonoBehaviour {
 	float _maxPull;
 	public float MaxPull{ get { return _maxPull; } }
 
-	//all the inputs from the player (sans mouse...this might go here later
+	//all the inputs from the player (sans mouse...this might go here later)
 	float _verticalInput;
 	float _horizontalInput;
 	float _jumpInput; 
@@ -87,8 +87,7 @@ public class PlayerController : MonoBehaviour {
 	#endregion
 
 	#region Motion Stuff
-	//this is the housing for all motion controls
-	//they are broken into different motion classes that are switched to based on conditions.  --------------------------------
+
 
 	public void EnterState(Motion _theMove){ //This is how the player moves through different motion states.
 		_move.ExitState ();
@@ -204,7 +203,7 @@ public class PlayerController : MonoBehaviour {
 
 	#region Adjectives
 
-	void GetStartingAdj(){
+	void GetStartingAdj(){ //compiles the players starting inventory
 		Adjective[] _theAdjs = _adjectiveHolder.GetComponents < Adjective> (); 
 		for(int i = 0; i < _theAdjs.Length ; i++){
 			_localAdj[i] = _theAdjs[i]; 
@@ -214,7 +213,7 @@ public class PlayerController : MonoBehaviour {
 	public Adjective GetAdj(int _slot){ //these 2 are called when replacing an adj on the player. This first bit gives the selected adj
 		return _localAdj [_slot]; 
 	}
-	public void ReplaceAdjOnPlayer(int _slot, Adjective _theAdj){
+	public void ReplaceAdjOnPlayer(int _slot, Adjective _theAdj){ //used when the player swaps adjectives
 		if(_localAdj[_slot] != null){
 			Destroy (_localAdj [_slot]); 
 		}

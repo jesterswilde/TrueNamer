@@ -6,6 +6,8 @@ public class Thing : MonoBehaviour {
 
 
 	#region Property Delceration
+
+	//These first set of properties help define what an object is. They are read by the world and then the thing is told what it is made of
 	[SerializeField]
 	float _mass = 1;
 	float _modMass; 
@@ -31,27 +33,9 @@ public class Thing : MonoBehaviour {
 	float _life = 1; 
 	float _modLife;
 	public float Life { get { return _modLife; } set { _modLife = value; } }
-
-
-
-	/* Old Variables
+	
 	[SerializeField]
-	bool _flammable = false;
-	public bool IsFlammable {get { return _flammable; } set{ _flammable =value;}}
-	[SerializeField]
-	bool _bouncy = false;
-	public bool IsBouncy {get{return _bouncy;} set{ _bouncy = value;}}
-	[SerializeField] 
-	float _fragility = 1; 
-	public float Fragility { get { return _fragility; } set { _fragility = value; } }
-	[SerializeField]
-	float _nourshiment = 1 ; 
-	public float Nourishment { get { return _nourshiment; } set { _nourshiment = value; } }
-	float _slick = 1; 
-	public float Slick { get { return _slick; } set { _slick = value; } }
-	*/
-	[SerializeField]
-	MadeOf _madeOf; 
+	MadeOf _madeOf;  
 	public MadeOf MadeFrom { get { return _madeOf; } }
 
 	#endregion 
