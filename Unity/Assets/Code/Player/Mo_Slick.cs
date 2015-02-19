@@ -1,16 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Mo_Ground : Motion {
+public class Mo_Slick : Motion {
 
-	//This is the primary movement script. it deals with unburdened walking / moving. 
-
+	
 	Vector3 _speed; 
 	bool _canJump; 
-
+	
 	float _time; 
 	float _jumpTime; 
-
+	
 	void MoveForward(){ //controls when they move forward. This whole script should be broken up into different states.
 		if (_verticalInput > 0 &&  !_forwardD.IsGrounded()){
 			_speed.z += 5; 
@@ -24,7 +23,7 @@ public class Mo_Ground : Motion {
 	void Strafe(){
 		_speed.x += 3 * _horizontalInput; 
 	}
-
+	
 	void Jump(){ //can only jump when on the ground. When space is pushed they go up
 		if (_jumpInput > 0.5f && _verticalInput > 0 &&  _canJump && !_forwardD.IsGrounded()) {
 			//they are moving forward and jumping
@@ -40,19 +39,17 @@ public class Mo_Ground : Motion {
 	} 
 	void CalculateSpeed(){
 		if (_speed == Vector3.zero && _canJump) { //if there is no input, stop them immediately
-			_rigid.velocity = Vector3.zero;  	
+			// If the player isn't holding anything, they lower their speed by the slickness every second. 
+			_rigid.velocity = Mathf.Clamp((_rigid.velocity.magnitude - _player.StandingOnMadeOf.Slick*Time.deltaTime),0,_player.MaxSpeed)*_rigid.velocity.normalized; 
 		}
 		else{
 			LookTowardsCamera(); 
 			_rigid.AddRelativeForce (_speed.normalized * _acceleration, ForceMode.Acceleration); //moves them in their selected direction
-			Vector3 _xz = new Vector3(_rigid.velocity.x,0,_rigid.velocity.z); 
-			float _mag = Mathf.Clamp(_xz.magnitude,0,_player.MaxSpeed); 
-			Vector3 _horizontal = ((_player.transform.forward *_speed.z) + (_player.transform.right *_speed.x)).normalized  * _mag;
-			_rigid.velocity = new Vector3(_horizontal.x, _rigid.velocity.y,_horizontal.z) ;
+			_rigid.velocity = Mathf.Clamp(_rigid.velocity.magnitude,0,_player.MaxSpeed) * _rigid.velocity.normalized; 
 		}
 	}
 	
-
+	
 	void StartJumpDelay(){ //these 2 are about making it so the player can't jump repeatedly by holding the button down and getting a fuckton of movement.
 		_canJump = false; //I may want to consider nixing this and 'setting' the verticle component of a jump, or even movement as a whole. 
 		_jumpTime = .2f;
@@ -66,7 +63,7 @@ public class Mo_Ground : Motion {
 			}
 		}
 	}
-
+	
 	void GrabObject(){
 		if (_player.SelectedThing != null) {
 			if(Input.GetKeyDown(KeyCode.E)){ 
@@ -86,7 +83,7 @@ public class Mo_Ground : Motion {
 			}
 		}
 	}
-	public override void ControlsEffect ()
+	public override void ControlsEffect () //called every fixed update.
 	{
 		base.ControlsEffect ();
 		_speed = Vector3.zero; 
@@ -100,7 +97,7 @@ public class Mo_Ground : Motion {
 	public override void ControlsInput ()
 	{
 		base.ControlsInput ();
-
+		
 	}
 	public override void MotionState ()
 	{
@@ -109,18 +106,18 @@ public class Mo_Ground : Motion {
 		}
 		GrabObject (); 
 	}
-	public override void EnterSlickGround (bool _isSlick)
+	public override void EnterSlickGround (bool _isSlick) //if you enter a non slick surface, walk normally. 
 	{
 		base.EnterSlickGround (_isSlick);
-		if (_isSlick) {
-			_player.EnterState(_player.SlickMo); 
+		if (!_isSlick) {
+			_player.EnterState(_player.GroundedMo); 
 		}
 	}
 	public override void EnterState ()
 	{
-		Debug.Log ("Now on normal ground | " + _player.Move + " | " + _player.StandingOnMadeOf);
 		_camera.Normal (); 
 		StartJumpDelay ();
+		Debug.Log ("Now on slick ground | " + _player.Move + " | " + _player.StandingOnMadeOf); 
 	}
 	public override void ExitState ()
 	{
@@ -129,7 +126,7 @@ public class Mo_Ground : Motion {
 	public override void Startup ()
 	{
 		base.Startup ();
-		_state = "ground"; 
-		_lastState = "ground"; 
+		_state = "slick"; 
+		_lastState = "slick"; 
 	}
 }

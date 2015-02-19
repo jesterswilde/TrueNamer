@@ -52,11 +52,6 @@ public class Mo_InAir : Motion {
 	{
 		base.SetAnim ();
 	}
-	public override void Startup (PlayerController _thePlayer)
-	{
-		base.Startup (_thePlayer);
-
-	}
 	public override void ExitState ()
 	{
 		base.ExitState ();

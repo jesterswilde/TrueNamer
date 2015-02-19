@@ -34,7 +34,10 @@ public class MadeOf : MonoBehaviour {
 	float _nourshiment = 1 ; 
 	public float Nourishment { get { return _nourshiment; } set { _nourshiment = value; } }
 	[SerializeField]
-	float _slick = 1; 
+	bool _isSlick = false;
+	public bool IsSlick { get { return _isSlick; } }
+	[SerializeField]
+	float _slick = 0; 
 	public float Slick { get { return _slick; } set { _slick = value; } }
 
 	public float MaterialDistance(Thing _theThing){

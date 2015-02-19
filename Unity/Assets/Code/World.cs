@@ -47,7 +47,13 @@ public class World : MonoBehaviour {
 		Adjective[] _theAdjs = FindObjectsOfType<Adjective> (); 
 		foreach (Adjective _adj in _theAdjs) {
 			if(_adj.transform.parent != _adjParent.transform){ //If they are not a child of the _adjParent, they are not a base adjective
-				Adjective _originalAdj = _baseAdjs[_adj.adjName]; 
+				Adjective _originalAdj = null;
+				if(!_baseAdjs.ContainsKey(_adj.adjName)){
+					Debug.Log("you spelled " + _adj.adjName + " on object " + _adj.name + " incorrectly, fix it batch."); 
+				}
+				else{
+					_originalAdj = _baseAdjs[_adj.adjName]; 
+				}
 				if(_originalAdj == null){
 					Debug.Log ("You have an adjective name does not match a base adjective on the object  " + _adj.gameObject.name); 
 				}
@@ -68,20 +74,13 @@ public class World : MonoBehaviour {
 		}
 	}
 
-	void ThingStartGame(){
+	void ThingStartGame(){ //Also used in buttons. Tell every thing to do their start up routine
 		Thing[] _allThings = FindObjectsOfType<Thing>(); 
 		foreach (Thing _thing in _allThings){
 			_thing.StartGame(); 
 		}
 	}
-	void AdjectivesInGameStart(){
-		_theAdjectives = GetComponentsInChildren<Adjective> (); 
-		Adjective[] _allAdjectives = FindObjectsOfType (typeof(Adjective)) as Adjective[]; 
-		foreach (Adjective _adj in _allAdjectives) {
-			_adj.GameStart(); 
-		}
-	}
-	static void MadeOfGameStart(){
+	static void MadeOfGameStart(){ //gets the made of properties
 		_allMadeOfs = World.T.GetComponentsInChildren<MadeOf> (); 
 	}
 
@@ -99,6 +98,7 @@ public class World : MonoBehaviour {
 	public static void SwapAdj(){
 		Adjective.SwapAdjectives (PlayerCon.SelectedThing, WorldUI.TopPanel.AdjI, WorldUI.InvenAdj.AdjI);
 		WorldUI.RefreshThingUI (); 
+		PlayerCon.IsGroundSlick (); //Do a ground test. 
 	}
 	public static void PauseTime(){
 		Time.timeScale = 0; 

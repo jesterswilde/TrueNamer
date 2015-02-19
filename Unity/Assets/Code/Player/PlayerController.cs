@@ -39,6 +39,9 @@ public class PlayerController : MonoBehaviour {
 	GroundDetection _groundD; 
 	public GroundDetection GroundD { get { return _groundD; } }
 	[SerializeField]
+	MadeOf _standingOnMadeOf;
+	public MadeOf StandingOnMadeOf { get { return _standingOnMadeOf; } }
+	[SerializeField]
 	GroundDetection _forwardD; 
 	public GroundDetection ForwardD { get { return _forwardD; } }
 	Rigidbody _rigid;
@@ -57,6 +60,9 @@ public class PlayerController : MonoBehaviour {
 	public Mo_Pulling PullingMo { get { return _moPulling; } }
 	Mo_Stasis _moStasis = new Mo_Stasis (); 
 	public Mo_Stasis StasisMo { get { return _moStasis; } }
+	Mo_Slick _moSlick = new Mo_Slick(); 
+	public Mo_Slick SlickMo { get { return _moSlick; } }
+	[SerializeField]
 	Motion _move; 
 	public Motion Move { get { return _move; } }
 	Motion _lastState; 
@@ -84,7 +90,7 @@ public class PlayerController : MonoBehaviour {
 	//this is the housing for all motion controls
 	//they are broken into different motion classes that are switched to based on conditions.  --------------------------------
 
-	public void EnterState(Motion _theMove){
+	public void EnterState(Motion _theMove){ //This is how the player moves through different motion states.
 		_move.ExitState ();
 		_move = _theMove;
 		_move.EnterState (); 
@@ -98,6 +104,21 @@ public class PlayerController : MonoBehaviour {
 	void OnCollisionEnter(Collision _other){
 		if(_velocity.y > 0){
 			_rigid.velocity = new Vector3(_rigid.velocity.x, _velocity.y,_rigid.velocity.z);  //THis preserves up and down momentum on collision
+		}
+	}
+
+	public void IsGroundSlick(){ //fired whenever you enter a new surface, or whenever the player swaps adjectives
+		Debug.Log ("Checking for sllick");
+		Ray _ray = new Ray (transform.position, Vector3.down); 
+		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
+		int _mask = ~ (1 << 8); 
+		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
+			Debug.Log(_hit.collider.name); 
+			Thing _otherThing = _hit.collider.gameObject.GetComponent<Thing>(); 
+			if(_otherThing != null){
+				_move.EnterSlickGround(_otherThing.MadeFrom.IsSlick); 
+				_standingOnMadeOf = _otherThing.MadeFrom; 
+			}
 		}
 	}
 
@@ -157,12 +178,12 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		if(Input.GetMouseButtonDown (1)){
-			if(World.IsPaused){
+			if(World.IsPaused){ //right clicking unpauses the game
 				WorldUI.HideThingUI(); 
 				World.UnPauseTime();
 			}
 			else{
-				WorldUI.ShowInventoryOnly();
+				WorldUI.ShowInventoryOnly(); //right click also shows your inventory when not paused
 			}
 		}
 		if (Input.GetMouseButtonUp (1)) {
@@ -215,9 +236,10 @@ public class PlayerController : MonoBehaviour {
 			Debug.Log ("Player needs an animator component, stupid ho"); 
 	}
 	void Start () {
-		_moGround.Startup (this); 
-		_moInAir.Startup (this); 
-		_moPulling.Startup (this); 
+		_moGround.Startup (); 
+		_moInAir.Startup (); 
+		_moPulling.Startup (); 
+		_moSlick.Startup (); 
 		_move = _moGround; 
 		_move.EnterState (); 
 		GetCenterOfScreen (); 

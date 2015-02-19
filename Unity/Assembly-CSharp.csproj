@@ -51,6 +51,7 @@
      <Compile Include="Assets\Code\Player\Mo_Ground.cs" />
      <Compile Include="Assets\Code\Player\Mo_InAir.cs" />
      <Compile Include="Assets\Code\Player\Mo_Pulling.cs" />
+     <Compile Include="Assets\Code\Player\Mo_Slick.cs" />
      <Compile Include="Assets\Code\Player\Mo_Stasis.cs" />
      <Compile Include="Assets\Code\Player\Motion.cs" />
      <Compile Include="Assets\Code\Player\PlayerController.cs" />

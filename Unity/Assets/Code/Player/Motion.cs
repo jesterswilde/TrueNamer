@@ -34,9 +34,9 @@ public class Motion {
 
 	//this bit is just to get all the variables that I need taken from the player controller script
 
-	public virtual void Startup(PlayerController _thePlayer){ //sets all the variables
+	public virtual void Startup(){ //sets all the variables
 		_player = World.PlayerCon;
-		_rigid = _thePlayer.GetComponent<Rigidbody> (); 
+		_rigid = _player.GetComponent<Rigidbody> (); 
 		_maxSpeed = _player.MaxSpeed;
 		_acceleration = _player.Acceleration; 
 		_jumpPower = _player.JumpPower; 
@@ -48,10 +48,10 @@ public class Motion {
 		_groundD = _player.GroundD; 
 	}
 
-	public virtual void ControlsEffect(){ //the base bit is just to get input
+	public virtual void ControlsEffect(){ // Called every physics update
 
 	}
-	public virtual void ControlsInput(){
+	public virtual void ControlsInput(){ //called every update
 		SetAxis ();
 		SetAnim ();
 	}
@@ -67,7 +67,9 @@ public class Motion {
 	public virtual void MotionState(){ //the states that can be entered from this place
 
 	}
+	public virtual void EnterSlickGround(bool _isSlick){//called whenever the player enters  a new surface
 
+	}
 	//mostly book keeping
 	public virtual void EnterState(){
 

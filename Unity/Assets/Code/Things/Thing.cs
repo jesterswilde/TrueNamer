@@ -154,6 +154,9 @@ public class Thing : MonoBehaviour {
 		ClearAdjList (); 
 		_madeOf = null; 
 		transform.localScale = _startScale; 
+		if (_rigid == null) {
+			_rigid = GetComponent<Rigidbody>(); 
+		}
 		_rigid.mass = _mass; 
 	}
 	public void SetAsModifiedScale(){
@@ -277,8 +280,10 @@ public class Thing : MonoBehaviour {
 	float BounceFactor(Thing _otherThing){
 		float _otherBounce = 0; 
 		float _thisBounce = 0; 
-		if(_otherThing.MadeFrom.IsBouncy) 
+		if(_otherThing != null){
+			if(_otherThing.MadeFrom.IsBouncy ) 
 						_otherBounce = _otherThing.MadeFrom.BounceAmount;
+		}
 		if (_madeOf.IsBouncy)
 						_thisBounce = _madeOf.BounceAmount;
 		if (_otherBounce > _thisBounce)
@@ -302,13 +307,13 @@ public class Thing : MonoBehaviour {
 		if (_madeOf.IsBouncy && _player.Move.StateName != "ground" && _player.Velocity.magnitude > 8) {
 			_isKinematic = true; 
 			_kinamticTimer = 0; 
-			_player.Rigid.velocity = Vector3.Reflect(_player.Velocity ,_theCollision.contacts[0].normal) *.7f; 
+			_player.Rigid.velocity = Vector3.Reflect(_player.Velocity ,_theCollision.contacts[0].normal)* _madeOf.BounceAmount; 
 			EliminateLandingChaos(); 
 		}
 	}
 	public void StopMoving(){
 		if(World.Chaos < 4){
-			if(!_isKinematic){
+			if(!_isKinematic && !_rigid.isKinematic){
 				_rigid.velocity = Vector3.zero;
 			}
 		}
@@ -335,7 +340,9 @@ public class Thing : MonoBehaviour {
 				_z = _rigid.velocity.z; 
 				_posZ = transform.position.z; 
 			}
-			_rigid.velocity = new Vector3(_x,_rigid.velocity.y,_z); 
+			if(!_rigid.isKinematic){
+				_rigid.velocity = new Vector3(_x,_rigid.velocity.y,_z); 
+			}
 			transform.position = new Vector3(_posX, transform.position.y,_posZ); 
 		}
 	}
@@ -447,6 +454,15 @@ public class Thing : MonoBehaviour {
 
 	#region Start and Update
 	void Start(){
+		if(_rigid == null){
+			_rigid = GetComponent<Rigidbody> (); 
+		}
+		if(_meshes == null){
+			_meshes = GetComponentsInChildren<Renderer> (); 
+		}
+		if(_renderer == null){
+			_renderer =  GetComponent<MeshRenderer> ();
+		}
 		_position = transform.position; 
 		_rotation = transform.rotation; 
 
