@@ -65,6 +65,7 @@ public class Thing : MonoBehaviour {
 	bool _isShunting = false; 
 	public bool IsShunting { get { return _isShunting; } }
 
+
 	bool _isSelected = false; 
 	bool _isColorLerping = false; 
 	Renderer _renderer; 
@@ -455,12 +456,13 @@ public class Thing : MonoBehaviour {
 
 	}
 	void Update(){
-		UpdateSleepTimer (); 
+
 		SelectMaterialLerp (); 
 		AwakePhysicsUpdate (); 
 	}
 	void FixedUpdate(){
 		AwakePhysicsFixedUpdate (); 
+		UpdateSleepTimer (); 
 	}
 	#endregion
 }

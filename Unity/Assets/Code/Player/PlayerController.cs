@@ -112,9 +112,9 @@ public class PlayerController : MonoBehaviour {
 		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
 		int _mask = ~ (1 << 8); 
 		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
-			Debug.Log(_hit.collider.name); 
 			Thing _otherThing = _hit.collider.gameObject.GetComponent<Thing>(); 
 			if(_otherThing != null){
+				Debug.Log(_otherThing.MadeFrom.IsSlick); 
 				_move.EnterSlickGround(_otherThing.MadeFrom.IsSlick); 
 				_standingOnMadeOf = _otherThing.MadeFrom; 
 			}

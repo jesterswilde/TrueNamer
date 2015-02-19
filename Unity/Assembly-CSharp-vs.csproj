@@ -62,6 +62,7 @@
      <Compile Include="Assets\Code\UI\TopPanelUI.cs" />
      <Compile Include="Assets\Code\UI\WorldUI.cs" />
      <Compile Include="Assets\Code\World.cs" />
+     <Compile Include="Assets\Scratch_Wolff\Test.cs" />
      <Compile Include="Assets\ShroudPlugin\Scripts\ShroudInstance.cs" />
      <Compile Include="Assets\ShroudPlugin\Scripts\ShroudObjectManager.cs" />
      <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-Bumped.shader" />
