@@ -61,14 +61,10 @@ public class World : MonoBehaviour {
 		if (World.T == null) {
 			World.T = this; 
 		}
+		MadeOfGameStart (); 
 		Thing[] _theThings = FindObjectsOfType<Thing> (); 
 		foreach (Thing _thing in _theThings) {
-			_thing.ClearAdjList(); 		
-		}
-		MadeOfGameStart (); 
-		AdjectivesInGameStart (); 
-		foreach (Thing _thing in _theThings) {
-			_thing.UpdateThing(); 		
+			_thing.StartGame(); 	
 		}
 	}
 
