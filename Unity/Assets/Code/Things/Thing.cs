@@ -64,6 +64,9 @@ public class Thing : MonoBehaviour {
 	public Quaternion Rotation { get { return _rotation; } } 
 	bool _isShunting = false; 
 	public bool IsShunting { get { return _isShunting; } }
+	bool _isGrowing = false;
+	Vector3 _targetScale;
+	float _unscaledTime = 2;  
 
 
 	bool _isSelected = false; 
@@ -98,10 +101,10 @@ public class Thing : MonoBehaviour {
 			_madeOf = World.WhatAmIMadeOf (this); 
 			ApplyMadeOf (); 
 		}
-		if(World.IsPaused){
-			World.StepForwardOneFrame (); 
+		if(World.IsPaused){ //when the object is updated, you need to move physics forward a frame to allow for shunting. 
+			//World.StepForwardOneFrame (); 
 		}
-	}
+	} 
 	public void ClearAdjList(){
 		_localAdj.Clear (); 
 	}
@@ -123,14 +126,34 @@ public class Thing : MonoBehaviour {
 			_childRend.material = _madeOf.Mat; 
 		}
 	}
+	void SlowMoGrow(){
+		if (World.IsPaused && _isGrowing) {
+			_unscaledTime += Time.unscaledDeltaTime; 
+			transform.localScale = Vector3.Lerp(transform.localScale, _targetScale, Time.fixedDeltaTime*20); 
+			Debug.Log(transform.localScale + " | " + _targetScale); 
+			if(transform.localScale == _targetScale){
+				_isGrowing = false; 
+				World.UnSlowMo(); 
+			}
+			if(_isGrowing && _unscaledTime > 1){ //we can only spend so long doing this. 
+				transform.localScale = _targetScale; 
+				_isGrowing = false; 
+				World.UnSlowMo(); 
+			}
+		}
+	}
 	void ApplyScaleMod(){ //applies the scale modfications, and does the physics for it. 
 		_isShunting = true; 
 		PhysicsSleep(); 
 		ShuntObjects(); 
-		transform.localScale = _modScale*_startScale; 
-		Debug.Log (_mass + " | " + _modScale); 
+		_targetScale  = _modScale*_startScale; 
+		_unscaledTime = 0;
+		if(World.IsPaused){
+			_isGrowing = true; 
+			World.SlowMo (); 
+		}
+		else transform.localScale = _modScale*_startScale; 
 		_rigid.mass = _mass *_modScale *_modScale *_modScale; 
-		Debug.Log (_rigid.mass); 
 		_rigid.WakeUp(); 
 	}
 
@@ -463,6 +486,7 @@ public class Thing : MonoBehaviour {
 	void FixedUpdate(){
 		AwakePhysicsFixedUpdate (); 
 		UpdateSleepTimer (); 
+		SlowMoGrow (); 
 	}
 	#endregion
 }

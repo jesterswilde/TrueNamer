@@ -94,11 +94,32 @@ public class PlayerController : MonoBehaviour {
 		_move = _theMove;
 		_move.EnterState (); 
 	}
+	Vector3 _pauseVelocity = new Vector3();
+	bool _isPauseMotion = false; 
+	float _pauseDrag = 0; 
+	float _pauseTimer = 0; 
+	float _pauseMotionDelay = .1f; 
+
 	public void Pause(){
-		
+		_isPauseMotion = true; 
+		_pauseTimer = 0;
+		_pauseVelocity = _rigid.velocity;
+		_pauseDrag = _rigid.drag; 
+		_rigid.velocity = Vector3.zero; 
+		_rigid.drag = 1000; 
+	}
+	void UnpauseMotionDelay(){
+		if (!World.IsPaused && _isPauseMotion) {
+			_pauseTimer += Time.fixedDeltaTime; 
+			if(_pauseTimer > _pauseMotionDelay){
+				UnPause(); 
+			}
+		}
 	}
 	public void UnPause(){
-		
+		_rigid.velocity = _pauseVelocity;
+		_rigid.drag = _pauseDrag;
+		_isPauseMotion = false;
 	}
 	void OnCollisionEnter(Collision _other){
 		if(_velocity.y > 0){
@@ -107,14 +128,12 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public void IsGroundSlick(){ //fired whenever you enter a new surface, or whenever the player swaps adjectives
-		Debug.Log ("Checking for sllick");
 		Ray _ray = new Ray (transform.position, Vector3.down); 
 		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
 		int _mask = ~ (1 << 8); 
 		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
 			Thing _otherThing = _hit.collider.gameObject.GetComponent<Thing>(); 
 			if(_otherThing != null){
-				Debug.Log(_otherThing.MadeFrom.IsSlick); 
 				_move.EnterSlickGround(_otherThing.MadeFrom.IsSlick); 
 				_standingOnMadeOf = _otherThing.MadeFrom; 
 			}
@@ -246,6 +265,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	void FixedUpdate () {
 		_move.ControlsEffect (); //calls has the effects of physics stuff happen
+		UnpauseMotionDelay ();
 	}
 	void Update(){
 		Crosshair (); 

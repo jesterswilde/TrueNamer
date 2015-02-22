@@ -28,6 +28,7 @@ public class World : MonoBehaviour {
 	[SerializeField]
 	int _chaos;
 	public static int Chaos;
+	static bool _canUpause = true; 
 
 	static MadeOf[] _allMadeOfs;
 
@@ -102,11 +103,14 @@ public class World : MonoBehaviour {
 	}
 	public static void PauseTime(){
 		Time.timeScale = 0; 
+		PlayerCon.Pause (); 
 		_isPaused = true; 
 	}
 	public static void UnPauseTime(){
-		Time.timeScale = 1; 
-		_isPaused = false; 
+		if(_canUpause){
+			Time.timeScale = 1; 
+			_isPaused = false;
+		}
 	}
 
 	public static int GetID(){
@@ -119,7 +123,16 @@ public class World : MonoBehaviour {
 		Screen.lockCursor = true; 
 	}
 
-
+	public static void SlowMo(){
+		Debug.Log ("Enter slow mo"); 
+		Time.timeScale = .3f; 
+		_canUpause = false; 
+	}
+	public static void UnSlowMo(){
+		Debug.Log ("Leaving Slow Mo"); 
+		Time.timeScale = 0; 
+		_canUpause = true; 
+	}
 	public static void StepForwardOneFrame(){
 		_oneFrameForward = true; 
 		_frameForwardTimer = 0; 

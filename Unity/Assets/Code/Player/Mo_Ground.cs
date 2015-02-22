@@ -118,7 +118,6 @@ public class Mo_Ground : Motion {
 	}
 	public override void EnterState ()
 	{
-		Debug.Log ("Now on normal ground | " + _player.Move + " | " + _player.StandingOnMadeOf);
 		_camera.Normal (); 
 		StartJumpDelay ();
 	}
