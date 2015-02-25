@@ -25,6 +25,9 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField]
 	float _maxPull;
 	public float MaxPull{ get { return _maxPull; } }
+	[SerializeField]
+	float _adjMaxDistance = 7; 
+	public float AdjMaxDistance { get { return _adjMaxDistance; } }
 
 	//all the inputs from the player (sans mouse...this might go here later)
 	float _verticalInput;
@@ -151,15 +154,16 @@ public class PlayerController : MonoBehaviour {
 			RaycastHit _hit;
 			if(Physics.Raycast(_ray,out _hit)){
 				Thing _thingFromRay = _hit.collider.gameObject.GetComponent<Thing>(); 
-				SelectTheThing(_thingFromRay, _hit); 
+				float _distance = Vector3.Distance(_hit.point, transform.position); 
+				SelectTheThing(_thingFromRay, _hit, _distance); 
 			}
 			else{
-				SelectTheThing(null,_hit); 
+				SelectTheThing(null,_hit, 100); 
 			}
 		}
 	}
-	void SelectTheThing(Thing _theThing, RaycastHit _theHit){
-		if(_theThing != null){ 
+	void SelectTheThing(Thing _theThing, RaycastHit _theHit, float _distance){
+		if(_theThing != null && _distance < _adjMaxDistance){ 
 			if(_selectedThing != null){ //you are selecting something that isn't null
 				if (_theThing.ID != _selectedThing.ID) { //they are not the same thing
 					_selectedThing.Deselect(); //deselect the old thing 
@@ -196,7 +200,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		if(Input.GetMouseButtonDown (1)){
-			if(World.IsPaused){ //right clicking unpauses the game
+			if(World.IsPaused && World.CanUnpause){ //right clicking unpauses the game
 				WorldUI.HideThingUI(); 
 				World.UnPauseTime();
 			}

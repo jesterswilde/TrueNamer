@@ -128,14 +128,15 @@ public class Thing : MonoBehaviour {
 	}
 	void SlowMoGrow(){
 		if (World.IsPaused && _isGrowing) {
+			Debug.Log(_unscaledTime); 
 			_unscaledTime += Time.unscaledDeltaTime; 
 			transform.localScale = Vector3.Lerp(transform.localScale, _targetScale, Time.fixedDeltaTime*20); 
-			Debug.Log(transform.localScale + " | " + _targetScale); 
 			if(transform.localScale == _targetScale){
 				_isGrowing = false; 
 				World.UnSlowMo(); 
 			}
-			if(_isGrowing && _unscaledTime > 1){ //we can only spend so long doing this. 
+			if(_isGrowing && _unscaledTime > .15f){ //we can only spend so long doing this. 
+				Debug.Log("overridden"); 
 				transform.localScale = _targetScale; 
 				_isGrowing = false; 
 				World.UnSlowMo(); 

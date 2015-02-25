@@ -29,6 +29,7 @@ public class World : MonoBehaviour {
 	int _chaos;
 	public static int Chaos;
 	static bool _canUpause = true; 
+	public static bool CanUnpause { get { return _canUpause; } }
 
 	static MadeOf[] _allMadeOfs;
 
@@ -96,17 +97,17 @@ public class World : MonoBehaviour {
 		}
 		return _allMadeOfs [_index];
 	}
-	public static void SwapAdj(){
+	public static void SwapAdj(){ //the main function called to swap adj from player to thing
 		Adjective.SwapAdjectives (PlayerCon.SelectedThing, WorldUI.TopPanel.AdjI, WorldUI.InvenAdj.AdjI);
 		WorldUI.RefreshThingUI (); 
 		PlayerCon.IsGroundSlick (); //Do a ground test. 
 	}
-	public static void PauseTime(){
+	public static void PauseTime(){ //used to pause the game
 		Time.timeScale = 0; 
 		PlayerCon.Pause (); 
 		_isPaused = true; 
 	}
-	public static void UnPauseTime(){
+	public static void UnPauseTime(){ //used to unpause the game. 
 		if(_canUpause){
 			Time.timeScale = 1; 
 			_isPaused = false;

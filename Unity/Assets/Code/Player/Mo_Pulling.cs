@@ -91,6 +91,9 @@ public class Mo_Pulling : Motion {
 	public override void MotionState ()
 	{
 		base.MotionState ();
+		if (_groundD.IsGrounded() == false) {
+			_player.EnterState(_player.InAirMo); 
+		}
 		if (Input.GetKeyDown (KeyCode.E)) {
 			_player.EnterState(_player.GroundedMo); 
 		}
