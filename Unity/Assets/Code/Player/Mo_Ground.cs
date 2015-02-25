@@ -39,16 +39,23 @@ public class Mo_Ground : Motion {
 		}
 	} 
 	void CalculateSpeed(){
+		float _modMaxSpeed = _maxSpeed;
+		float _modAcceleration = _acceleration; 
+		if(_player.StandingOnMadeOf != null){
+			_modMaxSpeed = _maxSpeed - _player.StandingOnMadeOf.Rough; 
+			_modAcceleration = Mathf.Clamp(_acceleration - (_player.StandingOnMadeOf.Rough/2),3,100);
+		}
 		if (_speed == Vector3.zero && _canJump) { //if there is no input, stop them immediately
 			_rigid.velocity = Vector3.zero;  	
 		}
 		else{
 			LookTowardsCamera(); 
-			_rigid.AddRelativeForce (_speed.normalized * _acceleration, ForceMode.Acceleration); //moves them in their selected direction
+			_rigid.AddRelativeForce (_speed.normalized * _modAcceleration, ForceMode.Acceleration); //moves them in their selected direction
 			Vector3 _xz = new Vector3(_rigid.velocity.x,0,_rigid.velocity.z); 
-			float _mag = Mathf.Clamp(_xz.magnitude,0,_player.MaxSpeed); 
+			float _mag = Mathf.Clamp(_xz.magnitude,0,_modMaxSpeed); 
 			Vector3 _horizontal = ((_player.transform.forward *_speed.z) + (_player.transform.right *_speed.x)).normalized  * _mag;
 			_rigid.velocity = new Vector3(_horizontal.x, _rigid.velocity.y,_horizontal.z) ;
+			Debug.Log(_modMaxSpeed + " | "  + _rigid.velocity.magnitude); 
 		}
 	}
 	
@@ -107,19 +114,18 @@ public class Mo_Ground : Motion {
 		if (_groundD.IsGrounded() == false) {
 			_player.EnterState(_player.InAirMo); 
 		}
-		GrabObject (); 
-	}
-	public override void EnterSlickGround (bool _isSlick)
-	{
-		base.EnterSlickGround (_isSlick);
-		if (_isSlick) {
-			_player.EnterState(_player.SlickMo); 
+		if(_player.StandingOnMadeOf != null){
+			if (_player.StandingOnMadeOf.IsSlick) {
+				_player.EnterState(_player.SlickMo); 
+			}
 		}
+		GrabObject (); 
 	}
 	public override void EnterState ()
 	{
 		_camera.Normal (); 
 		StartJumpDelay ();
+		MotionState (); 
 	}
 	public override void ExitState ()
 	{

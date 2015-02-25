@@ -39,6 +39,10 @@ public class MadeOf : MonoBehaviour {
 	[SerializeField]
 	float _slick = 0; 
 	public float Slick { get { return _slick; } set { _slick = value; } }
+	[SerializeField]
+	float _rough = 0; 
+	public float Rough { get { return _rough; } }
+	public bool isRough { get { if(_rough >0) return true; else return false;}}
 
 	public float MaterialDistance(Thing _theThing){
 		float _distance = 0; 

@@ -104,20 +104,20 @@ public class Mo_Slick : Motion {
 		if (_groundD.IsGrounded() == false) {
 			_player.EnterState(_player.InAirMo); 
 		}
-		GrabObject (); 
-	}
-	public override void EnterSlickGround (bool _isSlick) //if you enter a non slick surface, walk normally. 
-	{
-		base.EnterSlickGround (_isSlick);
-		if (!_isSlick) {
+		if (_player.StandingOnMadeOf != null) {
+			if(!_player.StandingOnMadeOf.IsSlick){
+				_player.EnterState (_player.GroundedMo);
+			}
+		}
+		else{
 			_player.EnterState(_player.GroundedMo); 
 		}
+		GrabObject (); 
 	}
 	public override void EnterState ()
 	{
 		_camera.Normal (); 
 		StartJumpDelay ();
-		Debug.Log ("Now on slick ground | " + _player.Move + " | " + _player.StandingOnMadeOf); 
 	}
 	public override void ExitState ()
 	{

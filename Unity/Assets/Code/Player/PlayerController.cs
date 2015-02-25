@@ -70,6 +70,11 @@ public class PlayerController : MonoBehaviour {
 	public Motion Move { get { return _move; } }
 	Motion _lastState; 
 	public Motion LastState { get { return _lastState; } set { _lastState = value; } }
+	Vector3 _pauseVelocity = new Vector3();
+	bool _isPauseMotion = false; 
+	float _pauseDrag = 0; 
+	float _pauseTimer = 0; 
+	float _pauseMotionDelay = .1f; 
 
 	//Things and stuff related to things
 	Thing _selectedThing; 
@@ -97,11 +102,7 @@ public class PlayerController : MonoBehaviour {
 		_move = _theMove;
 		_move.EnterState (); 
 	}
-	Vector3 _pauseVelocity = new Vector3();
-	bool _isPauseMotion = false; 
-	float _pauseDrag = 0; 
-	float _pauseTimer = 0; 
-	float _pauseMotionDelay = .1f; 
+
 
 	public void Pause(){
 		_isPauseMotion = true; 
@@ -137,8 +138,11 @@ public class PlayerController : MonoBehaviour {
 		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
 			Thing _otherThing = _hit.collider.gameObject.GetComponent<Thing>(); 
 			if(_otherThing != null){
-				_move.EnterSlickGround(_otherThing.MadeFrom.IsSlick); 
 				_standingOnMadeOf = _otherThing.MadeFrom; 
+				_move.EnterSlickGround(_otherThing.MadeFrom.IsSlick); 
+			}
+			else{
+				_standingOnMadeOf = null; 
 			}
 		}
 	}
@@ -150,9 +154,10 @@ public class PlayerController : MonoBehaviour {
 
 	void Crosshair(){ //raycasts from the center of the screen to find what we are 'looking at'
 		if(!World.IsPaused){
+			int _mask = ~ (1 << 8); 
 			Ray _ray = Camera.main.ScreenPointToRay (_screenCenter); 
 			RaycastHit _hit;
-			if(Physics.Raycast(_ray,out _hit)){
+			if(Physics.Raycast(_ray,out _hit,100,_mask)){
 				Thing _thingFromRay = _hit.collider.gameObject.GetComponent<Thing>(); 
 				float _distance = Vector3.Distance(_hit.point, transform.position); 
 				SelectTheThing(_thingFromRay, _hit, _distance); 
@@ -274,8 +279,8 @@ public class PlayerController : MonoBehaviour {
 	void Update(){
 		Crosshair (); 
 		Clicking (); 
-		_move.ControlsInput ();  //gets input
 		_move.MotionState (); //checks to see if it should change states
+		_move.ControlsInput ();  //gets input
 		_velocity = _rigid.velocity; 
 	}
 	#endregion
