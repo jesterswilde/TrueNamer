@@ -77,6 +77,7 @@ public class PlayerController : MonoBehaviour {
 	float _pauseMotionDelay = .1f; 
 
 	//Things and stuff related to things
+	[SerializeField]
 	Thing _selectedThing; 
 	public Thing SelectedThing { get { return _selectedThing; } set { _selectedThing = value; } }
 	Thing _pulledThing; 
@@ -153,21 +154,20 @@ public class PlayerController : MonoBehaviour {
 	//Thing interaction --------------------------------------------
 
 	void Crosshair(){ //raycasts from the center of the screen to find what we are 'looking at'
-		if(!World.IsPaused){
-			int _mask = ~ (1 << 8); 
-			Ray _ray = Camera.main.ScreenPointToRay (_screenCenter); 
-			RaycastHit _hit;
-			if(Physics.Raycast(_ray,out _hit,100,_mask)){
-				Thing _thingFromRay = _hit.collider.gameObject.GetComponent<Thing>(); 
-				float _distance = Vector3.Distance(_hit.point, transform.position); 
-				SelectTheThing(_thingFromRay, _hit, _distance); 
-			}
-			else{
-				SelectTheThing(null,_hit, 100); 
-			}
+		int _mask = ~ (1 << 8); 
+		Ray _ray = Camera.main.ScreenPointToRay (_screenCenter); 
+		RaycastHit _hit;
+		if(Physics.Raycast(_ray,out _hit,100,_mask)){
+			Thing _thingFromRay = _hit.collider.gameObject.GetComponent<Thing>(); 
+			float _distance = Vector3.Distance(_hit.point, transform.position); 
+			SelectTheThing(_thingFromRay, _hit, _distance); 
+		}
+		else{
+			SelectTheThing(null,_hit, 100); 
 		}
 	}
 	void SelectTheThing(Thing _theThing, RaycastHit _theHit, float _distance){
+		Debug.Log (_theThing + " | " + _distance); 
 		if(_theThing != null && _distance < _adjMaxDistance){ 
 			if(_selectedThing != null){ //you are selecting something that isn't null
 				if (_theThing.ID != _selectedThing.ID) { //they are not the same thing
@@ -193,12 +193,8 @@ public class PlayerController : MonoBehaviour {
 
 	void Clicking(){
 		if (Input.GetMouseButtonDown (0)) {
-			if(!World.IsPaused){
-				if(_selectedThing!= null){ //select a thing, and pause the game
-					World.PauseTime(); 
-					WorldUI.ShowThingUI(); 
-					_selectedThing.TurnFullSelected(); 
-				}
+			if(!World.IsPaused){ //if the game is not pause
+				World.PauseTime(); 
 			}
 			else if(_selectedThing != null){ //if the game is paused and you have a thing selected, do the swap
 				World.SwapAdj(); 

@@ -55,7 +55,6 @@ public class Mo_Ground : Motion {
 			float _mag = Mathf.Clamp(_xz.magnitude,0,_modMaxSpeed); 
 			Vector3 _horizontal = ((_player.transform.forward *_speed.z) + (_player.transform.right *_speed.x)).normalized  * _mag;
 			_rigid.velocity = new Vector3(_horizontal.x, _rigid.velocity.y,_horizontal.z) ;
-			Debug.Log(_modMaxSpeed + " | "  + _rigid.velocity.magnitude); 
 		}
 	}
 	

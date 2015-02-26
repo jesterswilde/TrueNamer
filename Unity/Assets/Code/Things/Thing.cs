@@ -215,13 +215,13 @@ public class Thing : MonoBehaviour {
 	void SelectMaterialLerp(){
 		if (_isColorLerping) {
 			if(_isSelected == true){
-				_renderer.material.SetFloat("_Blend", Mathf.Lerp(_renderer.material.GetFloat("_Blend") ,1, Time.deltaTime *3));
+				_renderer.material.SetFloat("_Blend", Mathf.Lerp(_renderer.material.GetFloat("_Blend") ,1, Time.unscaledDeltaTime *3));
 				if(_renderer.material.GetFloat("_Blend") == 1){
 					_isColorLerping = false; 
 				}
 			}
 			else{
-				_renderer.material.SetFloat("_Blend", Mathf.Lerp(_renderer.material.GetFloat("_Blend"), 0, Time.deltaTime*3)); 
+				_renderer.material.SetFloat("_Blend", Mathf.Lerp(_renderer.material.GetFloat("_Blend"), 0, Time.unscaledDeltaTime*3)); 
 				if(_renderer.material.GetFloat("_Blend")== 0){
 					_isColorLerping = false; 
 				}

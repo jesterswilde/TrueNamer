@@ -20,6 +20,7 @@ public class WorldUI : MonoBehaviour {
 	InvenAdjUI _invenADjUI;
 	public static InvenAdjUI InvenAdj;
 	public static WorldUI T; 
+	Thing _lastKnownThing; 
 	
 	[SerializeField]
 	Sprite _blankRune; 
@@ -52,7 +53,25 @@ public class WorldUI : MonoBehaviour {
 		_theList.Clear (); 
 	}
 
-
+	void PausedUI(){
+		if (World.IsPaused) {
+			if(World.PlayerCon.SelectedThing != null && !_thingUIOn){
+				ShowThingUI(); 
+			}
+			if(World.PlayerCon.SelectedThing != null && _thingUIOn){ //you have a thing selected, and the UI is on 
+				if(_lastKnownThing == null){ //if we didn't have a thing before, get the current one
+					_lastKnownThing = World.PlayerCon.SelectedThing;
+				}
+				if(_lastKnownThing.ID != World.PlayerCon.SelectedThing.ID){
+					_lastKnownThing = World.PlayerCon.SelectedThing; 
+					RefreshThingUI(); 
+				}
+			}
+			if(World.PlayerCon.SelectedThing == null && _thingUIOn){
+				HideThingUI(); 
+			}
+		}
+	}
 	public static void ShowThingUI(){
 		TopPanel.ShowTopPanel ();
 		InvenAdj.ShowInvenAdj (); 
@@ -84,6 +103,9 @@ public class WorldUI : MonoBehaviour {
 	}
 	void Start(){
 		HideThingUI (); 
+	}
+	void Update(){
+		PausedUI (); 
 	}
 
 }
