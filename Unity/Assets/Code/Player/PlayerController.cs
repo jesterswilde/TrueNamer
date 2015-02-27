@@ -168,6 +168,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	void CastToClimbable(Ray _ray, GroundDetection _theD){//this is used for surfaces you would climb on, such as walls or ceilings
+		Debug.Log ("Casting to wall"); 
 		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
 		int _mask = ~ (1 << 8); 
 		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
@@ -311,8 +312,8 @@ public class PlayerController : MonoBehaviour {
 	void Update(){
 		Crosshair (); 
 		Clicking (); 
-		_move.MotionState (); //checks to see if it should change states
 		_move.ControlsInput ();  //gets input
+		_move.MotionState (); //checks to see if it should change states
 		_velocity = _rigid.velocity; 
 	}
 	#endregion

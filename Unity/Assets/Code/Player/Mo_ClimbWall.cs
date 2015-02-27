@@ -21,6 +21,7 @@ public class Mo_ClimbWall : Motion {
 	}
 	void Jump(){
 		if(Input.GetKeyDown (KeyCode.Space)){
+			_player.CurrentGroundD.TurnOff(.1f); //temporarily disable the 
 			_player.Rigid.velocity = _out * _player.JumpPower; 
 			_player.EnterState (_player.InAirMo);
 		}
@@ -38,7 +39,6 @@ public class Mo_ClimbWall : Motion {
 				_up = (_hit.point - _player.GroundHit.point).normalized; //we get up from the direction between the first raycast, and the second (which is slightly higher
 				_right = (Quaternion.AngleAxis(90,_player.GroundHit.normal) *_up).normalized; //we get right from rotating _up arond the normal of the collision. It works, the internet assures me
 				_out = _player.GroundHit.normal; 
-				Debug.Log(_up + " | " + _right); 
 			}
 		}
 		else{
@@ -52,12 +52,16 @@ public class Mo_ClimbWall : Motion {
 			_player.EnterState(_player.InAirMo); 	
 		}
 	}
+	public override void ControlsInput ()
+	{
+		base.ControlsInput ();
+		Jump (); 
+	}
 	public override void ControlsEffect ()
 	{
 		base.ControlsEffect ();
 		CalcSpeed (); 
 		ApplySpeed (); 
-		Jump (); 
 	}
 
 	public override void EnterState ()
