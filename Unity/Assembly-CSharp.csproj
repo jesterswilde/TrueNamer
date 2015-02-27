@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Code\Player\CameraController.cs" />
      <Compile Include="Assets\Code\Player\GroundDetection.cs" />
+     <Compile Include="Assets\Code\Player\Mo_ClimbWall.cs" />
      <Compile Include="Assets\Code\Player\Mo_Ground.cs" />
      <Compile Include="Assets\Code\Player\Mo_InAir.cs" />
      <Compile Include="Assets\Code\Player\Mo_Pulling.cs" />

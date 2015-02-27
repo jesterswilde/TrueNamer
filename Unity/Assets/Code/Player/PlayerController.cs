@@ -14,6 +14,9 @@ public class PlayerController : MonoBehaviour {
 	float _acceleration;
 	public float Acceleration { get { return _acceleration; } }
 	[SerializeField]
+	float _climbSpeed = 5; 
+	public float ClimbSpeed { get { return _climbSpeed; } }
+	[SerializeField]
 	float _jumpPower; 
 	public float JumpPower { get { return _jumpPower; } }
 	[SerializeField]
@@ -65,11 +68,17 @@ public class PlayerController : MonoBehaviour {
 	public Mo_Stasis StasisMo { get { return _moStasis; } }
 	Mo_Slick _moSlick = new Mo_Slick(); 
 	public Mo_Slick SlickMo { get { return _moSlick; } }
+	Mo_ClimbWall _moClimbwall = new Mo_ClimbWall (); 
+	public Mo_ClimbWall ClimbWallMO { get { return _moClimbwall; } }
 	[SerializeField]
 	Motion _move; 
 	public Motion Move { get { return _move; } }
 	Motion _lastState; 
 	public Motion LastState { get { return _lastState; } set { _lastState = value; } }
+	RaycastHit _groundHit; 
+	GroundDetection _curGrounD; 
+	public GroundDetection CurrentGroundD { get { return _curGrounD; } }
+	public RaycastHit GroundHit { get { return _groundHit; } }
 	Vector3 _pauseVelocity = new Vector3();
 	bool _isPauseMotion = false; 
 	float _pauseDrag = 0; 
@@ -132,8 +141,19 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	public void IsGroundSlick(){ //fired whenever you enter a new surface, or whenever the player swaps adjectives
-		Ray _ray = new Ray (transform.position, Vector3.down); 
+	public void GetTouchedSurface(Ray _ray, bool _isGround, GroundDetection _theD){ //fired whenever you enter a new surface, or whenever the player swaps adjectives
+		if (_isGround) {
+			CastToGround(_ray); 
+		}
+		else{
+			CastToClimbable(_ray, _theD); 
+		}
+	}
+	public void GetTouchedSurface(){ //this version gets called when an adjective swaps
+		Ray _ray = new Ray (transform.position, Vector3.down); //will need to modify this for when the player is climbing
+		CastToGround (_ray); 
+	}
+	void CastToGround(Ray _ray){//this is called whenever a ground is entered or exited
 		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
 		int _mask = ~ (1 << 8); 
 		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
@@ -146,6 +166,22 @@ public class PlayerController : MonoBehaviour {
 				_standingOnMadeOf = null; 
 			}
 		}
+	}
+	void CastToClimbable(Ray _ray, GroundDetection _theD){//this is used for surfaces you would climb on, such as walls or ceilings
+		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
+		int _mask = ~ (1 << 8); 
+		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
+			Thing _otherThing = _hit.collider.gameObject.GetComponent<Thing>(); 
+			if(_otherThing != null){
+				if(_otherThing.MadeFrom.IsClimbable){ //if you ran into a thing, and that thing is climbable
+					_standingOnMadeOf = _otherThing.MadeFrom; 
+					_groundHit = _hit; 
+					_curGrounD = _theD; 
+					EnterState(_moClimbwall); 
+				}
+			}
+		}
+		else EnterState(_moInAir);
 	}
 
 	#endregion
@@ -167,7 +203,6 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	void SelectTheThing(Thing _theThing, RaycastHit _theHit, float _distance){
-		Debug.Log (_theThing + " | " + _distance); 
 		if(_theThing != null && _distance < _adjMaxDistance){ 
 			if(_selectedThing != null){ //you are selecting something that isn't null
 				if (_theThing.ID != _selectedThing.ID) { //they are not the same thing
@@ -263,6 +298,7 @@ public class PlayerController : MonoBehaviour {
 		_moInAir.Startup (); 
 		_moPulling.Startup (); 
 		_moSlick.Startup (); 
+		_moClimbwall.Startup (); 
 		_move = _moGround; 
 		_move.EnterState (); 
 		GetCenterOfScreen (); 

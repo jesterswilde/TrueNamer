@@ -5,24 +5,29 @@ using System.Collections;
 public class GroundDetection : MonoBehaviour {
 
 	public List<GameObject> _theGround = new List<GameObject>(); 
+	[SerializeField]
+	bool _isGroundD; 
 	
-	void AddGround(Collider _collider){
+	void AddSurface(Collider _collider){
 		_theGround.Add (_collider.gameObject); 
-		World.PlayerCon.IsGroundSlick(); //fire off a raycast to check what is going on with the new ground.
+		World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
 	}
-	void RemoveGround(Collider _collider){
+	void RemoveSurface(Collider _collider){
 		_theGround.Remove (_collider.gameObject); 
-		World.PlayerCon.IsGroundSlick(); //fire off a raycast to check what is going on with the new ground.
+		World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
+	}
+	Ray RayFromPlayer(){
+		return new Ray (World.PlayerCon.transform.position, (transform.position - World.PlayerCon.transform.position)); 
 	}
 	void OnTriggerEnter(Collider _collider){
 		if (_collider.gameObject.layer != 8) {
-			AddGround (_collider); 
+			AddSurface (_collider); 
 
 		}
 	}
 	void OnTriggerExit(Collider _collider){
 		if (_collider.gameObject.layer != 8) {
-			RemoveGround(_collider); 
+			RemoveSurface(_collider); 
 		}
 	}
 	public bool IsGrounded(){
