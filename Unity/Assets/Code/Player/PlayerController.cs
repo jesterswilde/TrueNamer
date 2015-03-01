@@ -70,6 +70,8 @@ public class PlayerController : MonoBehaviour {
 	public Mo_Slick SlickMo { get { return _moSlick; } }
 	Mo_ClimbWall _moClimbwall = new Mo_ClimbWall (); 
 	public Mo_ClimbWall ClimbWallMO { get { return _moClimbwall; } }
+	Mo_ClimbCeiling _moClimbCeiling = new Mo_ClimbCeiling(); 
+	public Mo_ClimbCeiling ClimbCeilingMo { get { return _moClimbCeiling; } }
 	[SerializeField]
 	Motion _move; 
 	public Motion Move { get { return _move; } }
@@ -113,7 +115,6 @@ public class PlayerController : MonoBehaviour {
 		_move.EnterState (); 
 	}
 
-
 	public void Pause(){
 		_isPauseMotion = true; 
 		_pauseTimer = 0;
@@ -140,7 +141,12 @@ public class PlayerController : MonoBehaviour {
 			_rigid.velocity = new Vector3(_rigid.velocity.x, _velocity.y,_rigid.velocity.z);  //THis preserves up and down momentum on collision
 		}
 	}
-
+	bool IsThisACeiling(RaycastHit _theHit){
+		if (Vector3.Dot (_theHit.normal, Vector3.down) > .8f) {
+			return true;
+		}
+		return false; 
+	}
 	public void GetTouchedSurface(Ray _ray, bool _isGround, GroundDetection _theD){ //fired whenever you enter a new surface, or whenever the player swaps adjectives
 		if (_isGround) {
 			CastToGround(_ray); 
@@ -167,8 +173,8 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 	}
+	
 	void CastToClimbable(Ray _ray, GroundDetection _theD){//this is used for surfaces you would climb on, such as walls or ceilings
-		Debug.Log ("Casting to wall"); 
 		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
 		int _mask = ~ (1 << 8); 
 		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
@@ -178,13 +184,20 @@ public class PlayerController : MonoBehaviour {
 					_standingOnMadeOf = _otherThing.MadeFrom; 
 					_groundHit = _hit; 
 					_curGrounD = _theD; 
-					EnterState(_moClimbwall); 
+					if(IsThisACeiling(_hit)){ //we now have to figure out if you are on a wall or a ceiling
+						EnterState(_moClimbCeiling);
+					}
+					else{
+						EnterState(_moClimbwall); 
+					}
 				}
 			}
 		}
-		else EnterState(_moInAir);
+		else{
+			Debug.Log("raycast missed"); 
+			EnterState(_moInAir);
+		}
 	}
-
 	#endregion
 
 	#region Thing Interaction
@@ -237,6 +250,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		if(Input.GetMouseButtonDown (1)){
+			Debug.Log("right click"); 
 			if(World.IsPaused && World.CanUnpause){ //right clicking unpauses the game
 				WorldUI.HideThingUI(); 
 				World.UnPauseTime();
@@ -300,6 +314,7 @@ public class PlayerController : MonoBehaviour {
 		_moPulling.Startup (); 
 		_moSlick.Startup (); 
 		_moClimbwall.Startup (); 
+		_moClimbCeiling.Startup (); 
 		_move = _moGround; 
 		_move.EnterState (); 
 		GetCenterOfScreen (); 
