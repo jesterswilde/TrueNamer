@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Code\Player\CameraController.cs" />
      <Compile Include="Assets\Code\Player\GroundDetection.cs" />
+     <Compile Include="Assets\Code\Player\Mo_ClimbCeiling.cs" />
      <Compile Include="Assets\Code\Player\Mo_ClimbWall.cs" />
      <Compile Include="Assets\Code\Player\Mo_Ground.cs" />
      <Compile Include="Assets\Code\Player\Mo_InAir.cs" />
@@ -66,14 +67,19 @@
      <Compile Include="Assets\Scratch_Wolff\Test.cs" />
      <Compile Include="Assets\ShroudPlugin\Scripts\ShroudInstance.cs" />
      <Compile Include="Assets\ShroudPlugin\Scripts\ShroudObjectManager.cs" />
+     <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Basic.shader" />
      <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-Bumped.shader" />
      <None Include="Assets\Code\Shaders\TextureChange.shader" />
      <None Include="Assets\ShroudPlugin\Readme.txt" />
      <None Include="Assets\ShroudPlugin\Samples\Shroud Files\PerfTest_Export.cwf.txt" />
+     <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-BasicOutline.shader" />
      <None Include="Assets\ShroudPlugin\Samples\Shroud Files\Flag_Export.cwf.txt" />
+     <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-LightedOutline.shader" />
+     <None Include="Assets\Standard Assets\Toon Shading\Sources\Shaders\Toony-Lighted.shader" />
      <None Include="Assets\ShroudPlugin\Samples\Shroud Files\HairBall_Export.cwf.txt" />
      <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-BumpSpec.shader" />
      <None Include="Assets\ShroudPlugin\Samples\Shaders\Two Sided\Mobile-Diffuse.shader" />
+     <None Include="Assets\Shaders\CartoonShader.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>

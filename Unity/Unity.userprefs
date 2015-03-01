@@ -1,8 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Art\Meshes\Materials\tf2test.shader">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Code\Things\Thing.cs">
     <Files>
-      <File FileName="Assets\Art\Meshes\Materials\tf2test.shader" Line="23" Column="35" />
+      <File FileName="Assets\Code\Things\Thing.cs" Line="37" Column="24" />
+      <File FileName="Assets\Code\Things\MadeOf.cs" Line="32" Column="24" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

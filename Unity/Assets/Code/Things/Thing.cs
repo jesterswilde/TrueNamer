@@ -33,6 +33,10 @@ public class Thing : MonoBehaviour {
 	float _life = 1; 
 	float _modLife;
 	public float Life { get { return _modLife; } set { _modLife = value; } }
+	[SerializeField]
+	float _durability = 30; 
+	[SerializeField]
+	bool _breakable = true; 
 	
 	[SerializeField]
 	MadeOf _madeOf;  
@@ -59,6 +63,8 @@ public class Thing : MonoBehaviour {
 	Vector3 _velocity; 
 	public Vector3 Velocity { get { return _velocity; } }
 	Vector3 _position; 
+	float _force; 
+	public float Force { get { return _force; } }
 	Quaternion _rotation;
 	bool _isFreeRotating = false; 
 	public Quaternion Rotation { get { return _rotation; } } 
@@ -320,6 +326,24 @@ public class Thing : MonoBehaviour {
 			EliminateLandingChaos(); 
 		}
 	}
+	float BreakThreshold(){ //returns how much it takes to break this object
+		return _rigid.mass *_durability * _madeOf.Fragility;
+	}
+	void Breaktest(Thing _otherThing){
+		float _totalForce = _force; 
+		if (_otherThing != null) {
+			_totalForce += _otherThing.Force; 
+		}
+		Debug.Log (_totalForce + " | " + BreakThreshold() + " | " + name); 
+		if(_breakable){
+			if (_totalForce > BreakThreshold ()) {
+				BreakObject(); 
+			}
+		}
+	}
+	void BreakObject(){
+		Destroy (this.gameObject); 
+	}
 	public void StopMoving(){
 		if(World.Chaos < 4){
 			if(!_isKinematic && !_rigid.isKinematic){
@@ -372,7 +396,7 @@ public class Thing : MonoBehaviour {
 		}
 	}
 
-	void FreeRotate(){
+	void FreeRotate(){//free rotation is about objects rotating as they move through space
 		_isFreeRotating = true; 
 	}
 	void StopFreeRotation(){
@@ -392,12 +416,14 @@ public class Thing : MonoBehaviour {
 				if(!_isFreeRotating){
 					transform.rotation = _rotation; 
 				}
+				_force = _rigid.mass * _velocity.magnitude; 
 			}
 		}
 	}
 
 	void OnCollisionEnter(Collision _other){ //when we hit objects, do shit. 
 		Thing _colThing = _other.gameObject.GetComponent<Thing> (); 
+		Breaktest (_colThing); 
 		if (_colThing != null) { //if a thing collides with another thing
 			GetBounced(_other, _colThing); 
 			StopMoving(); 
