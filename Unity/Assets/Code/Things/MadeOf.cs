@@ -43,6 +43,12 @@ public class MadeOf : MonoBehaviour {
 	float _rough = 0; 
 	public float Rough { get { return _rough; } }
 	public bool isRough { get { if(_rough >0) return true; else return false;}}
+	[SerializeField]
+	bool _climbable; 
+	public bool IsClimbable { get { return _climbable; } }
+	[SerializeField]
+	float _climbSpeedMod; 
+	public float ClimbSpeedMod { get { return _climbSpeedMod; } }
 
 	public float MaterialDistance(Thing _theThing){
 		float _distance = 0; 

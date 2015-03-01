@@ -85,4 +85,15 @@ public class Motion {
 		Quaternion _targetRotation =  Quaternion.Euler(_player.transform.rotation.eulerAngles.x, _cameraTrans.rotation.eulerAngles.y, _player.transform.rotation.eulerAngles.z);
 		_player.transform.rotation = Quaternion.Lerp(_player.transform.rotation, _targetRotation, _turning); 
 	}
+	protected virtual void LookTowardsVelocity(){
+		Vector3 _noYVel = new Vector3 (_player.Rigid.velocity.x, 0, _player.Rigid.velocity.z); 
+		Debug.Log (_noYVel.magnitude); 
+		if(_noYVel.magnitude > 6){
+			Vector3 _back = _player.transform.position + _noYVel; 
+			Quaternion _oldRot = _player.transform.rotation; 
+			_player.transform.LookAt (_back);
+			_player.transform.rotation = Quaternion.Lerp(_oldRot,_player.transform.rotation,Time.deltaTime*_turnSpeed*2); 
+		}
+
+	}
 }

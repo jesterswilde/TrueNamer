@@ -100,7 +100,7 @@ public class World : MonoBehaviour {
 	public static void SwapAdj(){ //the main function called to swap adj from player to thing
 		Adjective.SwapAdjectives (PlayerCon.SelectedThing, WorldUI.TopPanel.AdjI, WorldUI.InvenAdj.AdjI);
 		WorldUI.RefreshThingUI (); 
-		PlayerCon.IsGroundSlick (); //Do a ground test. 
+		PlayerCon.GetTouchedSurface (); //Do a ground test. 
 	}
 	public static void PauseTime(){ //used to pause the game
 		Time.timeScale = 0; 

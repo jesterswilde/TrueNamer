@@ -24,17 +24,17 @@ public class Mo_InAir : Motion {
 		_rigid.AddRelativeForce(_speed*_player.AirSpeed ,ForceMode.Acceleration); 	
 	}
 	public override void ControlsInput (){
-		_speed = Vector3.zero; 
+		LookTowardsVelocity (); 
 		base.ControlsInput ();
-		HeavyGravity (); 
-		MoveForward ();
-		Strafe (); 
-		InAirMove (); 
 	}
 
 	public override void ControlsEffect ()
 	{
 		base.ControlsEffect ();
+		_speed = Vector3.zero;
+		HeavyGravity (); 
+		MoveForward ();
+		Strafe (); 
 		InAirMove (); 
 
 	}
