@@ -120,7 +120,7 @@ public class World : MonoBehaviour {
 	}
 
 	void GameSettings(){
-		Screen.showCursor = false; 
+		Cursor.visible = false; 
 		Screen.lockCursor = true; 
 	}
 

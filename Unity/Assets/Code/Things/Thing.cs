@@ -386,7 +386,7 @@ public class Thing : MonoBehaviour {
 	}
 	void ShuntObjects(){ //When an object needs to displace objects around it
 		PhysicsSleep (); 
-		float _sphereRad = Vector3.Distance (this.collider.bounds.max, this.collider.bounds.center) *2; 
+		float _sphereRad = Vector3.Distance (this.GetComponent<Collider>().bounds.max, this.GetComponent<Collider>().bounds.center) *2; 
 		Collider[] _shuntedColliders = Physics.OverlapSphere (transform.position, _sphereRad); 
 		foreach (Collider _col in _shuntedColliders) {
 			Thing _colThing =  _col.gameObject.GetComponent<Thing>(); 
