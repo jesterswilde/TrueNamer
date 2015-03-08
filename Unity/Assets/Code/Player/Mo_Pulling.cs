@@ -13,7 +13,7 @@ public class Mo_Pulling : Motion {
 	void GrabObject(){
 		_player.PulledThing = _player.SelectedThing; 
 		_startinMass = _rigid.mass; 
-		_rigid.mass = _player.PulledThing.Mass; 
+		_player.PulledThing.Mass = _rigid.mass; 
 	}
 	public void MoveToObject(){
 		Ray _ray = new Ray (_player.ThingRayHit.point, (_player.transform.position - _player.ThingRayHit.point)); 
