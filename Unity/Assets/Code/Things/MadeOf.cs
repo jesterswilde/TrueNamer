@@ -22,6 +22,12 @@ public class MadeOf : MonoBehaviour {
 	bool _flammable = false;
 	public bool IsFlammable {get { return _flammable; } set{ _flammable =value;}}
 	[SerializeField]
+	float _onFireThreshold = 1; 
+	public float OnFireThreshold { get { return _onFireThreshold; } }
+	[SerializeField]
+	float _fuelAmount = 1; 
+	public float FuelAmount { get { return _fuelAmount; } }
+	[SerializeField]
 	bool _bouncy = false;
 	public bool IsBouncy {get{return _bouncy;} set{ _bouncy = value;}}
 	[SerializeField]

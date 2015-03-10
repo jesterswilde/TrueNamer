@@ -10,6 +10,8 @@ public class Mo_Ground : Motion {
 
 	float _time; 
 	float _jumpTime; 
+	Vector3 _up; 
+	Vector3 _right; 
 
 	void MoveForward(){ //controls when they move forward. This whole script should be broken up into different states.
 		if (_verticalInput > 0 &&  !_forwardD.IsGrounded()){
@@ -38,31 +40,41 @@ public class Mo_Ground : Motion {
 			StartJumpDelay(); 
 		}
 	} 
+	void CalculateAxis(){
+		_up = Vector3.ProjectOnPlane(_player.transform.forward,_player.GroundHit.normal); //we are rotating up based on the the camera
+		_right = (Quaternion.AngleAxis(-90,_player.GroundHit.normal) *_up).normalized;
+	}
 	void CalculateSpeed(){
 		float _modMaxSpeed = _maxSpeed;
 		float _modAcceleration = _acceleration; 
-		if(_player.StandingOnMadeOf != null){
+		if(_player.StandingOnMadeOf != null){ //this is getting whether the player is standing on someting rough
 			_modMaxSpeed = _maxSpeed - _player.StandingOnMadeOf.Rough; 
 			_modAcceleration = Mathf.Clamp(_acceleration - (_player.StandingOnMadeOf.Rough/2),3,100);
 		}
 		if (_speed == Vector3.zero && _canJump) { //if there is no input, stop them immediately
 			_rigid.velocity = Vector3.zero;  	
 		}
-		else{
-			LookTowardsCamera(); 
-			_rigid.AddRelativeForce (_speed.normalized * _modAcceleration, ForceMode.Acceleration); //moves them in their selected direction
-			Vector3 _xz = new Vector3(_rigid.velocity.x,0,_rigid.velocity.z); 
-			float _mag = Mathf.Clamp(_xz.magnitude,0,_modMaxSpeed); 
-			Vector3 _horizontal = ((_player.transform.forward *_speed.z) + (_player.transform.right *_speed.x)).normalized  * _mag;
-			_rigid.velocity = new Vector3(_horizontal.x, _rigid.velocity.y,_horizontal.z) ;
+		else{ 
+			if(_canJump){
+				LookTowardsCamera(); //this is the player is holding a direction and not jumping
+				Vector3 _unprojectedForward = (_player.transform.forward * _speed.z + _player.transform.right * _speed.x).normalized; 
+				Vector3 _projectedForward = Vector3.ProjectOnPlane(_unprojectedForward, _player.GroundHit.normal).normalized; 
+				if(_projectedForward.y <= 0 || Vector3.Angle(_unprojectedForward, _projectedForward)*2 < _player.SlopeAngle){
+					float _mag = Mathf.Clamp(_rigid.velocity.magnitude,0,_modMaxSpeed); 
+					_rigid.velocity = _projectedForward * (Mathf.Max (_mag,3) + _modAcceleration * Time.fixedDeltaTime );
+				}
+				else{
+					_rigid.velocity = Vector3.zero; 
+				}
+			}
 		}
 	}
 	
 
 	void StartJumpDelay(){ //these 2 are about making it so the player can't jump repeatedly by holding the button down and getting a fuckton of movement.
 		_canJump = false; //I may want to consider nixing this and 'setting' the verticle component of a jump, or even movement as a whole. 
-		_jumpTime = .2f;
-		_time = 0; 
+		_jumpTime = .1f;
+		_time = 0;
 	}
 	void JumpTimer(){
 		if (!_canJump) {
@@ -74,7 +86,7 @@ public class Mo_Ground : Motion {
 	}
 
 	void GrabObject(){
-		if (_player.SelectedThing != null) {
+		if (_player.SelectedThing != null && _canJump) {
 			if(Input.GetKeyDown(KeyCode.E)){ 
 				//cast another ray from the player to the object
 				Ray _ray = new Ray(_player.transform.position,(_player.ThingRayHit.collider.gameObject.transform.position - _player.transform.position).normalized); 
@@ -121,13 +133,15 @@ public class Mo_Ground : Motion {
 	}
 	public override void EnterState ()
 	{
+		StartJumpDelay (); 
 		_camera.Normal (); 
-		StartJumpDelay ();
 		MotionState (); 
+		//_rigid.useGravity = false;
 	}
 	public override void ExitState ()
 	{
 		base.ExitState ();
+		//_rigid.useGravity = true;
 	}
 	public override void Startup ()
 	{

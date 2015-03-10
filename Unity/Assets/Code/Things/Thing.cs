@@ -37,6 +37,10 @@ public class Thing : MonoBehaviour {
 	float _durability = 30; 
 	[SerializeField]
 	bool _breakable = true; 
+	[SerializeField]
+	float _onFireThreshold;
+	[SerializeField]
+	float _fuelAmount; 
 	
 	[SerializeField]
 	MadeOf _madeOf;  
@@ -246,6 +250,43 @@ public class Thing : MonoBehaviour {
 
 	#endregion
 
+	#region Fire
+
+	bool _isOnFire = false; 
+	float _heatDampening = 10; 
+	float _heatValue = 0; 
+
+	public void HeatingHandling(){
+		CheckIfOnFire (); 
+		if (_isOnFire) {
+			World.T.RemoveFromHeatingThings(this); 
+			World.T.AddToFireList(this); 
+		}
+		else{ //if it is not on fire, lower the heat amount
+			_heatValue = Mathf.Max (0, _heatValue - _heatDampening); 
+			if(_heatValue == 0){
+				World.T.RemoveFromHeatingThings(this); 
+			}
+		}
+	}
+	public void OnFireHandling(){ //handles all the fire related eventes
+
+	}
+	float TotalFireThreshold(){ 
+		return _onFireThreshold * _madeOf.OnFireThreshold; 
+	}
+	void CheckIfOnFire(){ //currently there is no way to put an object out. We should address this
+		if (_heatValue > TotalFireThreshold()) {
+			_isOnFire = true; 
+		}
+	}
+	public void RecieveHeat(float _temperature){
+		_heatValue += _temperature; 
+	}
+
+
+	#endregion
+
 	#region Physics Stuff
 	void PhysicsSleep(){ //When we don't want objects to be flying around, we sleep 'em
 		if(_rigid != null){
@@ -334,7 +375,6 @@ public class Thing : MonoBehaviour {
 		if (_otherThing != null) {
 			_totalForce += _otherThing.Force; 
 		}
-		Debug.Log (_totalForce + " | " + BreakThreshold() + " | " + name); 
 		if(_breakable){
 			if (_totalForce > BreakThreshold ()) {
 				BreakObject(); 
@@ -506,7 +546,7 @@ public class Thing : MonoBehaviour {
 
 	}
 	void Update(){
-
+		OnFireHandling (); 
 		SelectMaterialLerp (); 
 		AwakePhysicsUpdate (); 
 	}

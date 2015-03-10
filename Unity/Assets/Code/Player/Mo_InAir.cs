@@ -26,13 +26,14 @@ public class Mo_InAir : Motion {
 	public override void ControlsInput (){
 		LookTowardsVelocity (); 
 		base.ControlsInput ();
+		//GroundTimer (); 
 	}
 
 	public override void ControlsEffect ()
 	{
 		base.ControlsEffect ();
 		_speed = Vector3.zero;
-		HeavyGravity (); 
+		//HeavyGravity (); 
 		MoveForward ();
 		Strafe (); 
 		InAirMove (); 

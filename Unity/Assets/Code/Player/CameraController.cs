@@ -12,6 +12,8 @@ public class CameraController : MonoBehaviour {
 	float stationaryDistance;
 	[SerializeField]
 	float speedFactor; 
+	[SerializeField]
+	float _lerpSpeed = 3; 
 	float _currentCamDistance; 
 	Vector3 _targetDir; 
 	Vector3 _targetPos; 
@@ -44,7 +46,7 @@ public class CameraController : MonoBehaviour {
 	}
 	void PositionCamera(){ // moves the camera into place with a lerp
 		_targetDir =  _theCam.position - transform.position; 
-		_theCam.position = Vector3.Lerp(TheCam.position, transform.position + _targetDir.normalized * _currentCamDistance, Time.deltaTime*3); 
+		_theCam.position = Vector3.Lerp(TheCam.position, transform.position + _targetDir.normalized * _currentCamDistance, Time.deltaTime*_lerpSpeed); 
 	}
 	void Start(){
 		_player = World.PlayerTran;

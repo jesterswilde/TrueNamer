@@ -8,6 +8,7 @@ public class GroundDetection : MonoBehaviour {
 	public List<GameObject> _theGround = new List<GameObject>(); 
 	[SerializeField]
 	bool _isGroundD; 
+	public bool IsTheGround { get { return _isGroundD; } }
 	[SerializeField]
 	bool _canUse = true; 
 	bool _shouldGetStayColliders = false;
@@ -24,13 +25,14 @@ public class GroundDetection : MonoBehaviour {
 			World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
 		}
 	}
-	Ray RayFromPlayer(){
+	Ray RayFromPlayer(){ 
 		return new Ray (World.PlayerCon.transform.position, (transform.position - World.PlayerCon.transform.position)); 
 	}
 	public void TurnOff(float _timer){ //temporarily disables this collider sending info
 		_canUse = false; 
 		Invoke ("TurnOn", _timer); 
 		_theGround.Clear (); 
+		Debug.Log ("Turning off"); 
 	}
 	void TurnOn(){ //starting seidng info again
 		_canUse = true; 
@@ -39,7 +41,6 @@ public class GroundDetection : MonoBehaviour {
 	void StartGettingStayColliders(){ //when you start sending info, collect the colliders you are already in
 		_shouldGetStayColliders = true; 
 		Invoke ("StopGettingStayColliders", .1f); 
-		Debug.Log ("Getting surfaces"); 
 	}
 	void StopGettingStayColliders(){
 		_shouldGetStayColliders = false; 

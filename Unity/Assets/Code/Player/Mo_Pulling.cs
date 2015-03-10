@@ -13,7 +13,7 @@ public class Mo_Pulling : Motion {
 	void GrabObject(){
 		_player.PulledThing = _player.SelectedThing; 
 		_startinMass = _rigid.mass; 
-		_player.PulledThing.Mass = _rigid.mass; 
+		_rigid.mass = _player.PulledThing.Mass; 
 	}
 	public void MoveToObject(){
 		Ray _ray = new Ray (_player.ThingRayHit.point, (_player.transform.position - _player.ThingRayHit.point)); 
@@ -31,6 +31,7 @@ public class Mo_Pulling : Motion {
 		_player.Rigid.WakeUp (); 
 	}
 	void ReleaseObject(){
+		Debug.Log ("released object"); 
 		_player.PulledThing = null;
 		_rigid.mass = _startinMass; 
 	}
@@ -106,6 +107,7 @@ public class Mo_Pulling : Motion {
 	}
 	public override void ExitState ()
 	{
+
 		base.ExitState ();
 		ReleaseObject (); 
 	}

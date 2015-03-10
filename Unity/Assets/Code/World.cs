@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public class World : MonoBehaviour {
 
+	#region Variable Decleration
+
 	public static PlayerController PlayerCon;
 	public static Transform PlayerTran; 
 	[SerializeField]
@@ -13,6 +15,9 @@ public class World : MonoBehaviour {
 	public static World T; 
 	[SerializeField]
 	CameraController _cameraController; 
+	[SerializeField]
+	GroundDetection _groundD; 
+	public static GroundDetection GroundD; 
 	
 	Adjective[] _theAdjectives; 
 	public Adjective[] AllAdj { get { return _theAdjectives; } }
@@ -20,6 +25,8 @@ public class World : MonoBehaviour {
 	public static bool IsPaused { get { return _isPaused; } }
 	static bool _oneFrameForward = false; 
 	static float _frameForwardTimer = 0; 
+	List<Thing> _heatingThings = new List<Thing> (); 
+	List<Thing> _fireThings = new List<Thing>(); 
 
 	[SerializeField] 
 	GameObject _adjParent; 
@@ -32,10 +39,13 @@ public class World : MonoBehaviour {
 	public static bool CanUnpause { get { return _canUpause; } }
 
 	static MadeOf[] _allMadeOfs;
+	static GroundDetection[] _allGroundD; 
 
 	static int _id = 0; 
 
+	#endregion
 
+	#region Component Collection 
 
 	public void UpdateAdjList(){ //This updates the 'base' adjectives. THey are children of hte world game object.
 		_baseAdjs.Clear ();  //THey are used as reference for all other adjectives
@@ -85,6 +95,13 @@ public class World : MonoBehaviour {
 	static void MadeOfGameStart(){ //gets the made of properties
 		_allMadeOfs = World.T.GetComponentsInChildren<MadeOf> (); 
 	}
+	void GetAllGroundD(){ //get collect all ground detection 
+		_allGroundD = FindObjectsOfType<GroundDetection> (); 
+	}
+
+	#endregion
+
+	#region active public methods
 
 	public static MadeOf WhatAmIMadeOf(Thing _theThing){ //iterates through all 'made ofs' and finds out which one a thing is 'closest' to
 		int _index = 0; 
@@ -97,6 +114,61 @@ public class World : MonoBehaviour {
 		}
 		return _allMadeOfs [_index];
 	}
+
+	public static void RecalculateGroundD(){
+		foreach (GroundDetection _groundD in _allGroundD) {
+			if(!_groundD.IsTheGround){
+				_groundD.TurnOff(.05f); 
+			}
+		}
+	}
+
+	#endregion
+
+
+
+	#region Fire 
+	public void AddToHeatingList(Thing _theThing){
+		if (!_heatingThings.Contains(_theThing)) {
+			_heatingThings.Add (_theThing);	
+		}
+	}
+
+	public void RemoveFromHeatingThings(Thing _theThing){
+		if (_heatingThings.Contains(_theThing)) {
+			_heatingThings.Remove(_theThing); 	
+		}
+	}
+	public void AddToFireList(Thing _theThing){
+		if (!_fireThings.Contains(_theThing)) {
+			_fireThings.Add(_theThing); 	
+		}
+	}
+	public void RemoveFromFireList(Thing _theThing){
+		if (_fireThings.Contains(_theThing)) {
+			_fireThings.Remove(_theThing); 
+		}
+	}
+
+	void CalculateFire(){
+		foreach (Thing _thing in _fireThings) {
+			_thing.OnFireHandling(); 	
+		}
+	}
+	void CalculateHeating(){
+		foreach (Thing _thing in _heatingThings) {
+			_thing.HeatingHandling(); 
+		}
+	}
+	void FireTimer(){ //callled at the start of the game, is the rate at which we check for fire things happening. 
+		InvokeRepeating ("CalculateFire", 1f, 1f);
+		InvokeRepeating ("CalculateHeating", 1.1f, 1f); 
+	}
+	#endregion
+
+
+
+	#region Adjective and Time
 	public static void SwapAdj(){ //the main function called to swap adj from player to thing
 		Adjective.SwapAdjectives (PlayerCon.SelectedThing, WorldUI.TopPanel.AdjI, WorldUI.InvenAdj.AdjI);
 		WorldUI.RefreshThingUI (); 
@@ -148,7 +220,12 @@ public class World : MonoBehaviour {
 			}
 		}
 	}
+	#endregion
 
+
+
+
+	#region Start Awake & Update
 	void Awake(){
 		if (_player != null) {
 						PlayerCon = _player; 
@@ -161,11 +238,13 @@ public class World : MonoBehaviour {
 				} else
 						Debug.Log ("Hook the camera up to the world node homie homie G"); 
 		T = this;  
+		GroundD = _groundD; 
 		Chaos = Mathf.Clamp ( _chaos,0,10); 
 		MadeOfGameStart (); 
 	}
 	void Start(){
 		ThingStartGame (); 
+		GetAllGroundD (); 
 		//AdjectivesInGameStart (); 
 		GameSettings (); 
 	}
@@ -175,6 +254,6 @@ public class World : MonoBehaviour {
 	void FixedUpdate(){
 		OneFrameForwardTimer (); 
 	}
-
+	#endregion
 
 }
