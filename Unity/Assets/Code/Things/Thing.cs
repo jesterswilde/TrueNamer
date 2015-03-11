@@ -380,6 +380,7 @@ public class Thing : MonoBehaviour {
 				BreakObject(); 
 			}
 		}
+		Debug.Log (_totalForce + " | " + BreakThreshold ());
 	}
 	void BreakObject(){
 		Destroy (this.gameObject); 
@@ -456,9 +457,9 @@ public class Thing : MonoBehaviour {
 				if(!_isFreeRotating){
 					transform.rotation = _rotation; 
 				}
-				_force = _rigid.mass * _velocity.magnitude; 
 			}
 		}
+		_force = _rigid.mass * _velocity.magnitude; 
 	}
 
 	void OnCollisionEnter(Collision _other){ //when we hit objects, do shit. 
