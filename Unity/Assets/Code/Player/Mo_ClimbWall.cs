@@ -72,8 +72,13 @@ public class Mo_ClimbWall : Motion {
 	public override void MotionState ()
 	{
 		base.MotionState ();
-		if (!_player.CurrentGroundD.IsGrounded()) {
-			_player.EnterState(_player.InAirMo); 	
+		if(_player.CurrentGroundD != null){
+			if (!_player.CurrentGroundD.IsGrounded()) {
+				_player.EnterState(_player.InAirMo); 	
+			}
+		}
+		else{
+			_player.EnterState(_player.InAirMo); 
 		}
 	}
 	public override void ControlsInput ()

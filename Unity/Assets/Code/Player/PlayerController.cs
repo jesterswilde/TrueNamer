@@ -156,7 +156,6 @@ public class PlayerController : MonoBehaviour {
 		if (_curGrounD != null) {
 			Ray _ray = new Ray(transform.position, _curGrounD.transform.position - transform.position); 
 			GetTouchedSurface(_ray,_curGrounD.IsTheGround,_curGrounD); 
-			Debug.Log(_curGrounD);
 		}
 	}
 	public void GetTouchedSurface(Ray _ray, bool _isGround, GroundDetection _theD){ //fired whenever you enter a new surface, or whenever the player swaps adjectives
@@ -212,6 +211,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		else{
 			World.RecalculateGroundD(); 
+			Debug.Log(_theD); 
 			Debug.Log("raycast missed"); 
 			EnterState(_moInAir);
 		}
@@ -349,6 +349,8 @@ public class PlayerController : MonoBehaviour {
 		_move.ControlsInput ();  //gets input
 		_move.MotionState (); //checks to see if it should change states
 		_velocity = _rigid.velocity; 
+		//Debug.Log (_move); 
+		//Debug.Log (_standingOnGO); 
 	}
 	#endregion
 }

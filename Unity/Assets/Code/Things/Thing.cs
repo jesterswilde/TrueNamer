@@ -382,10 +382,31 @@ public class Thing : MonoBehaviour {
 		}
 		Debug.Log (_totalForce + " | " + BreakThreshold ());
 	}
+	void Breaktest(float _otherForce){
+		float _totalForce = _force + _otherForce; 
+		if(_breakable){
+			if (_totalForce > BreakThreshold ()) {
+				BreakObject(); 
+			}
+		}
+		Debug.Log (_totalForce + " | " + BreakThreshold ());
+	}
 	void BreakObject(){
 		Destroy (this.gameObject); 
 	}
-	public void StopMoving(){
+	public void HitByMechanical(bool _isAffected, float _force){
+		Debug.Log ("Hit by mechanical"); 
+		if (_isAffected) {
+			Breaktest(_force); 	
+		}
+		else{
+			_rigid.velocity = _velocity;
+			transform.position = _position; 
+			transform.rotation = _rotation; 
+		}
+	}
+
+	public void StopMoving(){ //minimizes small movements
 		if(World.Chaos < 4){
 			if(!_isKinematic && !_rigid.isKinematic){
 				_rigid.velocity = Vector3.zero;
@@ -417,7 +438,7 @@ public class Thing : MonoBehaviour {
 			if(!_rigid.isKinematic){
 				_rigid.velocity = new Vector3(_x,_rigid.velocity.y,_z); 
 			}
-			transform.position = new Vector3(_posX, transform.position.y,_posZ); 
+			transform.position = new Vector3(_posX, transform.position.y,_posZ);
 		}
 	}
 	void EliminateLandingChaos(){ //when something lands, change it's position to be right before it landed
@@ -454,7 +475,7 @@ public class Thing : MonoBehaviour {
 		if(World.Chaos < 2){
 			if (!_rigid.IsSleeping ()) {
 				EliminateHorizontalChaos(); 
-				if(!_isFreeRotating){
+				if(!_isFreeRotating && _rigid.velocity.magnitude > .01f){
 					transform.rotation = _rotation; 
 				}
 			}
@@ -463,15 +484,17 @@ public class Thing : MonoBehaviour {
 	}
 
 	void OnCollisionEnter(Collision _other){ //when we hit objects, do shit. 
-		Thing _colThing = _other.gameObject.GetComponent<Thing> (); 
-		Breaktest (_colThing); 
-		if (_colThing != null) { //if a thing collides with another thing
-			GetBounced(_other, _colThing); 
-			StopMoving(); 
-		}
-		PlayerController _player = _other.gameObject.GetComponent<PlayerController> (); //if it's colliding with a plaer
-		if (_player != null) {
-			GetBounced(_other, _player); 
+		if(_other.collider.GetComponent<Mechanical>() == null){ //mechanical objects have their own collision setup
+			Thing _colThing = _other.gameObject.GetComponent<Thing> (); 
+			Breaktest (_colThing); 
+			if (_colThing != null) { //if a thing collides with another thing
+				GetBounced(_other, _colThing); 
+				//StopMoving(); 
+			}
+			PlayerController _player = _other.gameObject.GetComponent<PlayerController> (); //if it's colliding with a plaer
+			if (_player != null) {
+				GetBounced(_other, _player); 
+			}
 		}
 	}
 

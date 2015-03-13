@@ -13,7 +13,7 @@ public class Mo_Pulling : Motion {
 	void GrabObject(){
 		_player.PulledThing = _player.SelectedThing; 
 		_startinMass = _rigid.mass; 
-		_rigid.mass = _player.PulledThing.Mass; 
+		//_rigid.mass = _player.PulledThing.Mass; 
 	}
 	public void MoveToObject(){
 		Ray _ray = new Ray (_player.ThingRayHit.point, (_player.transform.position - _player.ThingRayHit.point)); 
@@ -68,7 +68,7 @@ public class Mo_Pulling : Motion {
 			if(_rigid.velocity.magnitude <= _player.MaxSpeed) { //speed cap
 				Vector3 _pulledVelocity =  ((_player.transform.forward *_speed.z) + (_player.transform.right *_speed.x)).normalized  * 4; 
 				_rigid.velocity = _player.PulledThing.Rigid.velocity = _pulledVelocity;
-				
+				Debug.Log(_rigid.velocity); 
 				//_rigid.AddRelativeForce (_speed.normalized * _acceleration, ForceMode.Acceleration); //moves them in their selected direction
 
 			}

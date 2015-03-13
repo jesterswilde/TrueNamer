@@ -66,6 +66,7 @@ public class Mo_Ground : Motion {
 				else{
 					_rigid.velocity = Vector3.zero; 
 				}
+				Debug.Log(_player.GroundHit.collider.name + " | " + _projectedForward); 
 			}
 		}
 	}
