@@ -9,10 +9,8 @@ public class Mechanical_Circle : Mechanical {
 	[SerializeField]
 	float _stutterDuration = .5f;
 	[SerializeField]
-	float _massThreshold; 
-	[SerializeField]
 	List<Transform> _targets = new List<Transform>(); 
-	Rigidbody _rigid; 
+
 
 	float _stutterTimer = 0; 
 	bool _forward; 
@@ -78,8 +76,8 @@ public class Mechanical_Circle : Mechanical {
 		StutterTimer (); 
 	}
 	void Start(){
-		_rigid = GetComponent<Rigidbody> (); 	
 		AddMarkers (); 
+		_rigid = GetComponent<Rigidbody> (); 
 		_rigid.constraints = RigidbodyConstraints.FreezeAll; 
 	}
 
