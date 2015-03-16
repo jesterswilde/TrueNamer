@@ -19,6 +19,9 @@ public class MadeOf : MonoBehaviour {
 
 	//Properties --------------------------
 	[SerializeField]
+	float _massMod = 1;
+	public float MassMod { get { return _massMod; } }
+	[SerializeField]
 	bool _flammable = false;
 	public bool IsFlammable {get { return _flammable; } set{ _flammable =value;}}
 	[SerializeField]

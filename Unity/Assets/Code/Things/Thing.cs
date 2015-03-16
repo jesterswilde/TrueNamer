@@ -132,6 +132,7 @@ public class Thing : MonoBehaviour {
 	}
 	void ApplyMadeOf(){ //setting the materials, other things may happen here later. 
 		_renderer.material = _madeOf.Mat; 
+		_rigid.mass = _rigid.mass * _madeOf.MassMod; 
 		foreach (Renderer _childRend in _meshes) {
 			_childRend.material = _madeOf.Mat; 
 		}
