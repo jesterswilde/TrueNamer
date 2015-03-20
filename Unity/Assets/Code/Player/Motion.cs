@@ -79,20 +79,18 @@ public class Motion {
 	}
 	public virtual void LookTowardsCamera(){ //called when you move forwards or backwards
 		Quaternion _targetRotation =  Quaternion.Euler(_player.transform.rotation.eulerAngles.x, _cameraTrans.rotation.eulerAngles.y, _player.transform.rotation.eulerAngles.z);
+		//I use player rotations for X and Z because I am only trying to rotate in the Y axis
 		_player.transform.rotation = Quaternion.Slerp (_player.transform.rotation, _targetRotation, _turnSpeed*Time.deltaTime); 
 	}
 	public virtual void LookTowardsCamera(float _turning){
 		Quaternion _targetRotation =  Quaternion.Euler(_player.transform.rotation.eulerAngles.x, _cameraTrans.rotation.eulerAngles.y, _player.transform.rotation.eulerAngles.z);
 		_player.transform.rotation = Quaternion.Lerp(_player.transform.rotation, _targetRotation, _turning); 
 	}
-	protected virtual void LookTowardsVelocity(){
+	protected virtual void LookTowardsVelocity(){ //called when the player jumps
 		Vector3 _noYVel = new Vector3 (_player.Rigid.velocity.x, 0, _player.Rigid.velocity.z); 
-		if(_noYVel.magnitude > 6){
-			Vector3 _back = _player.transform.position + _noYVel; 
-			//Quaternion _oldRot = _player.transform.rotation; 
-			_player.transform.LookAt (_back);
-			//_player.transform.rotation = Quaternion.Lerp(_oldRot,_player.transform.rotation,Time.deltaTime*_turnSpeed*4); 
+		if(_noYVel.magnitude > 6){ //This prevents the player from spinning wildly in the air
+			Vector3 _back = _player.transform.position + _noYVel; //It's called back because it's mostly for wall jumps
+			_player.transform.LookAt (_back); //you'll note no lerping in this version. That's beacuse Snapping is important, I may put the lerping back in later
 		}
-
 	}
 }

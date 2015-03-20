@@ -41,6 +41,7 @@ public class Mo_InAir : Motion {
 	}
 	public override void EnterState ()
 	{
+		_player.ClearStandingOn (); 
 		_camera.Normal (); 
 	}
 	public override void MotionState ()

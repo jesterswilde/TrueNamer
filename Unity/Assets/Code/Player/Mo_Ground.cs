@@ -44,6 +44,7 @@ public class Mo_Ground : Motion {
 		_up = Vector3.ProjectOnPlane(_player.transform.forward,_player.GroundHit.normal); //we are rotating up based on the the camera
 		_right = (Quaternion.AngleAxis(-90,_player.GroundHit.normal) *_up).normalized;
 	}
+
 	void CalculateSpeed(){
 		float _modMaxSpeed = _maxSpeed;
 		float _modAcceleration = _acceleration; 
@@ -66,7 +67,6 @@ public class Mo_Ground : Motion {
 				else{
 					_rigid.velocity = Vector3.zero; 
 				}
-				Debug.Log(_player.GroundHit.collider.name + " | " + _projectedForward); 
 			}
 		}
 	}

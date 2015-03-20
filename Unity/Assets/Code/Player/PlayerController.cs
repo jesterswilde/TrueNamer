@@ -159,21 +159,28 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	public void GetTouchedSurface(Ray _ray, bool _isGround, GroundDetection _theD){ //fired whenever you enter a new surface, or whenever the player swaps adjectives
+		Debug.Log ("Shooting rays"); 
 		if (_isGround) {
-			CastToGround(_ray, World.GroundD); 
+			CastToGround(_ray, _theD); 
 		}
 		else{
 			CastToClimbable(_ray, _theD); 
 		}
+		Debug.Log (" ==== " + _curGrounD + " | " + _standingOnGO  + " | " + _move); 
 	}
 	public void GetTouchedSurface(){ //this version gets called when an adjective swaps
 		Ray _ray = new Ray (transform.position, Vector3.down); //will need to modify this for when the player is climbing
-		CastToGround (_ray, World.GroundD); 
+		CastToGround (_ray, GroundD); 
+	}
+	public void ClearStandingOn(){
+		_curGrounD = null;
+		_standingOnGO = null;
+		_standingOnMadeOf = null; 
 	}
 	void CastToGround(Ray _ray, GroundDetection _theD){//this is called whenever a ground is entered or exited
+		Collider _coll = _theD.GetComponent<Collider> (); 
 		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
-		int _mask = ~ (1 << 8); 
-		if(Physics.Raycast(_ray,out _hit, 10,_mask)){
+		if(Physics.SphereCast(_ray, _coll.bounds.extents.magnitude ,out _hit, 10, World.NoPlayerMask)){
 			Thing _otherThing = _hit.collider.gameObject.GetComponent<Thing>(); 
 			if(_otherThing != null){
 				_standingOnMadeOf = _otherThing.MadeFrom; 
@@ -191,11 +198,11 @@ public class PlayerController : MonoBehaviour {
 	void CastToClimbable(Ray _ray, GroundDetection _theD){//this is used for surfaces you would climb on, such as walls or ceilings
 		Collider _coll = _theD.GetComponent<Collider> (); 
 		RaycastHit _hit;  //it raycasts directly down and figures out if it is on a slick surface or not. 
-		int _mask = ~ (1 << 8); 
-		if(Physics.SphereCast(_ray,_coll.bounds.extents.magnitude,out _hit, 10,_mask)){
+		if(Physics.Raycast(_ray,out _hit, 10,World.NoPlayerMask)){
+			Debug.Log("found a wall"); 
 			Thing _otherThing = _hit.collider.gameObject.GetComponent<Thing>(); 
 			if(_otherThing != null){
-				if(_otherThing.MadeFrom.IsClimbable){ //if you ran into a thing, and that thing is climbable
+				if(_otherThing.MadeFrom.IsClimbable && _otherThing.gameObject != _standingOnGO){ //if you ran into a thing, and that thing is climbable
 					_standingOnMadeOf = _otherThing.MadeFrom; 
 					_groundHit = _hit; 
 					_curGrounD = _theD; 
@@ -210,10 +217,12 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		else{
-			World.RecalculateGroundD(); 
-			Debug.Log(_theD); 
-			Debug.Log("raycast missed"); 
-			EnterState(_moInAir);
+			if(_curGrounD == _theD){
+				World.RecalculateGroundD(); 
+				Debug.Log(_theD); 
+				Debug.Log("Recalculating"); 
+				EnterState(_moInAir);
+			}
 		}
 	}
 	#endregion
@@ -349,7 +358,7 @@ public class PlayerController : MonoBehaviour {
 		_move.ControlsInput ();  //gets input
 		_move.MotionState (); //checks to see if it should change states
 		_velocity = _rigid.velocity; 
-		//Debug.Log (_move); 
+		//Debug.Log (_curGrounD + " | " + _standingOnGO + " | " + _move); 
 		//Debug.Log (_standingOnGO); 
 	}
 	#endregion

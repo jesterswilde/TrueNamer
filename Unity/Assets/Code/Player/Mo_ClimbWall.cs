@@ -74,10 +74,12 @@ public class Mo_ClimbWall : Motion {
 		base.MotionState ();
 		if(_player.CurrentGroundD != null){
 			if (!_player.CurrentGroundD.IsGrounded()) {
+				Debug.Log("stopped climbing because tehre is no more wall") ;
 				_player.EnterState(_player.InAirMo); 	
 			}
 		}
 		else{
+			Debug.Log("stopped climbing because there is no current D"); 
 			_player.EnterState(_player.InAirMo); 
 		}
 	}
@@ -95,6 +97,7 @@ public class Mo_ClimbWall : Motion {
 
 	public override void EnterState ()
 	{
+		Debug.Log ("now climbing a wall"); 
 		_holdingSpace = false;
 		_player.Rigid.useGravity = false;
 		GetAxis (); 
@@ -102,6 +105,8 @@ public class Mo_ClimbWall : Motion {
 	}
 	public override void ExitState ()
 	{
+
+		Debug.Log ("no loner climbing a wall"); 
 		base.ExitState ();
 		_player.Rigid.useGravity = true; 
 	}

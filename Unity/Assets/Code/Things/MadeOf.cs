@@ -8,13 +8,14 @@ public class MadeOf : MonoBehaviour {
 	public Material Mat { get { return _material; } }
 	//What defines the material
 	[SerializeField]
-	float _density = 1; 
+	float _earth = 1; 
 	[SerializeField]
-	float _stability = 1; 
+	float _fire = 1; 
 	[SerializeField]
-	float _friction = 1;
+	float _air = 1;
 	[SerializeField]
-	float _life = 1; 
+	float _water = 1; 
+	//I think Aang can save us all. 
 
 
 	//Properties --------------------------
@@ -61,19 +62,10 @@ public class MadeOf : MonoBehaviour {
 
 	public float MaterialDistance(Thing _theThing){
 		float _distance = 0; 
-		_distance += Mathf.Abs(_density - _theThing.Density);
-		_distance += Mathf.Abs (_stability - _theThing.Stability); 
-		_distance += Mathf.Abs(_friction - _theThing.Friction); 
-		_distance += Mathf.Abs (_life - _theThing.Life); 
+		_distance += Mathf.Abs(_earth - _theThing.Earth);
+		_distance += Mathf.Abs (_fire - _theThing.Fire); 
+		_distance += Mathf.Abs(_air - _theThing.Air); 
+		_distance += Mathf.Abs (_water - _theThing.Water); 
 		return _distance; 
 	}
-
-
-
-	void Start(){
-		
-	}
-
-
-
 }

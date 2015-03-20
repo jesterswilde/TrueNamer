@@ -18,21 +18,21 @@ public class Thing : MonoBehaviour {
 	bool _shouldSetStartScale = true; 
 	public float Scale {get{return _modScale;} set{ _modScale = value;}}
 	[SerializeField]
-	float _density = 1; 
-	float _modDensity; 
-	public float Density { get { return _modDensity; } set { _modDensity = value; } }
+	float _earth = 1; 
+	float _modEarth; 
+	public float Earth { get { return _modEarth; } set { _modEarth = value; } }
 	[SerializeField]
-	float _stability = 1; 
-	float _modStability; 
-	public float Stability { get { return _modStability; } set { _modStability = value; } }
+	float _fire = 1; 
+	float _modFire; 
+	public float Fire { get { return _modFire; } set { _modFire = value; } }
 	[SerializeField]
-	float _friction = 1;
-	float _modFriction; 
-	public float Friction { get { return _modFriction; } set { _modFriction = value; } }
+	float _air = 1;
+	float _modAir; 
+	public float Air { get { return _modAir; } set { _modAir = value; } }
 	[SerializeField]
-	float _life = 1; 
-	float _modLife;
-	public float Life { get { return _modLife; } set { _modLife = value; } }
+	float _water = 1; 
+	float _modWater;
+	public float Water { get { return _modWater; } set { _modWater = value; } }
 	[SerializeField]
 	float _durability = 30; 
 	[SerializeField]
@@ -122,10 +122,10 @@ public class Thing : MonoBehaviour {
 		_modMass = _mass; 
 		_rigid.mass = _modMass;
 		_modScale = 1; 
-		_modDensity = _density;
-		_modStability = _stability;
-		_modFriction = _friction; 
-		_modLife = _life;
+		_modEarth = _earth;
+		_modFire = _fire;
+		_modAir = _air; 
+		_modWater = _water;
 	}
 	void ApplyAdjectives(){ //some Adjectives are more than a boolean. In that case, this will call the list of functions
 		ApplyScaleMod (); 
@@ -221,13 +221,13 @@ public class Thing : MonoBehaviour {
 	}
 	public void TurnFullSelected(){
 		_isColorLerping = false; 
-		_renderer.material.SetFloat ("_Blend", 1); 
+		_renderer.material.SetFloat ("_Blend", .5f); 
 	}
 	void SelectMaterialLerp(){
 		if (_isColorLerping) {
 			if(_isSelected == true){
-				_renderer.material.SetFloat("_Blend", Mathf.Lerp(_renderer.material.GetFloat("_Blend") ,1, Time.unscaledDeltaTime *3));
-				if(_renderer.material.GetFloat("_Blend") == 1){
+				_renderer.material.SetFloat("_Blend", Mathf.Lerp(_renderer.material.GetFloat("_Blend") ,.5f, Time.unscaledDeltaTime *3));
+				if(_renderer.material.GetFloat("_Blend") == .5f){
 					_isColorLerping = false; 
 				}
 			}
@@ -381,7 +381,6 @@ public class Thing : MonoBehaviour {
 				BreakObject(); 
 			}
 		}
-		Debug.Log (_totalForce + " | " + BreakThreshold ());
 	}
 	void Breaktest(float _otherForce){
 		float _totalForce = _force + _otherForce; 
@@ -390,13 +389,11 @@ public class Thing : MonoBehaviour {
 				BreakObject(); 
 			}
 		}
-		Debug.Log (_totalForce + " | " + BreakThreshold ());
 	}
 	void BreakObject(){
 		Destroy (this.gameObject); 
 	}
 	public void HitByMechanical(bool _isAffected, float _force){
-		Debug.Log ("Hit by mechanical"); 
 		if (_isAffected) {
 			Breaktest(_force); 	
 		}

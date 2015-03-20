@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Reflection; 
 
@@ -9,10 +9,10 @@ public class Adjective : MonoBehaviour {
 	public Color adjTint; 
 	
 	public float scale = 1; 
-	public float density = 1;
-	public float stability = 1; 
-	public float friction = 1;  
-	public float life = 1; 
+	public float earth = 0;
+	public float fire = 0; 
+	public float air = 0;  
+	public float water = 0; 
 	public int SortPriority; 
 
 	protected Thing _theThing; 
@@ -23,10 +23,10 @@ public class Adjective : MonoBehaviour {
 		if(_theThing == null){
 			_theThing = GetComponent<Thing> (); 
 		}
-		_theThing.Life *= life; 
-		_theThing.Friction *= friction;
-		_theThing.Density *= density; 
-		_theThing.Stability *= stability; 
+		_theThing.Water += water; 
+		_theThing.Air += air;
+		_theThing.Earth += earth; 
+		_theThing.Fire += fire; 
 		_theThing.Scale *= scale; 
 	}
 

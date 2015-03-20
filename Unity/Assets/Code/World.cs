@@ -43,6 +43,10 @@ public class World : MonoBehaviour {
 
 	static int _id = 0; 
 
+	[SerializeField]
+	LayerMask _noPlayerMask; 
+	public static LayerMask NoPlayerMask; 
+
 	#endregion
 
 	#region Component Collection 
@@ -239,6 +243,7 @@ public class World : MonoBehaviour {
 						Debug.Log ("Hook the camera up to the world node homie homie G"); 
 		T = this;  
 		GroundD = _groundD; 
+		NoPlayerMask = _noPlayerMask; 
 		Chaos = Mathf.Clamp ( _chaos,0,10); 
 		MadeOfGameStart (); 
 	}

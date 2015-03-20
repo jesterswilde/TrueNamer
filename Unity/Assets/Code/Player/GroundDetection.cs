@@ -15,6 +15,7 @@ public class GroundDetection : MonoBehaviour {
 
 	void AddSurface(Collider _collider){
 		if(!_theGround.Contains(_collider.gameObject)){
+			Debug.Log("adding surface") ;
 			_theGround.Add (_collider.gameObject); 
 			World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
 		}
@@ -22,10 +23,13 @@ public class GroundDetection : MonoBehaviour {
 	void RemoveSurface(Collider _collider){
 		if(_theGround.Contains(_collider.gameObject)){
 			_theGround.Remove (_collider.gameObject);
-			World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
+			if(World.PlayerCon.CurrentGroundD == this){
+				World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
+			}
 		}
 	}
 	Ray RayFromPlayer(){ 
+		Debug.DrawRay(World.PlayerCon.transform.position, (transform.position - World.PlayerCon.transform.position), Color.red,10);
 		return new Ray (World.PlayerCon.transform.position, (transform.position - World.PlayerCon.transform.position)); 
 	}
 	public void TurnOff(float _timer){ //temporarily disables this collider sending info
