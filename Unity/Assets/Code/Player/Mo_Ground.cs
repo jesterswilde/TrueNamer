@@ -49,7 +49,6 @@ public class Mo_Ground : Motion {
 				Vector3 _projectedForward = Vector3.ProjectOnPlane(_unprojectedForward, _player.GroundHit.normal).normalized; 
 				if(_projectedForward.y <= 0 || Vector3.Angle(_unprojectedForward, _projectedForward)*2 < _player.SlopeAngle){ //if the surface they are standing on is not sloped upward above teh slope angle
 					float _mag = Mathf.Clamp(_rigid.velocity.magnitude,0,_modMaxSpeed); 
-					//_rigid.velocity = _projectedForward * (Mathf.Max (_mag,3) + _modAcceleration * Time.fixedDeltaTime );
 					_rigid.velocity = _projectedForward * (Mathf.Max (_mag,3) + _modAcceleration * Time.fixedDeltaTime );
 				}
 				else{
