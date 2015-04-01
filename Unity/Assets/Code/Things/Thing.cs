@@ -155,18 +155,21 @@ public class Thing : MonoBehaviour {
 		}
 	}
 	void ApplyScaleMod(){ //applies the scale modfications, and does the physics for it. 
-		_isShunting = true; 
-		PhysicsSleep(); 
-		ShuntObjects(); 
-		_targetScale  = _modScale*_startScale; 
-		_unscaledTime = 0;
-		if(World.IsPaused){
-			_isGrowing = true; 
-			World.SlowMo (); 
+		if(_modScale != 1){
+			Debug.Log("applying scale mod"); 
+			_isShunting = true; 
+			PhysicsSleep(); 
+			ShuntObjects(); 
+			_targetScale  = _modScale*_startScale; 
+			_unscaledTime = 0;
+			if(World.IsPaused){
+				_isGrowing = true; 
+				World.SlowMo (); 
+			}
+			else transform.localScale = _modScale*_startScale; 
+			_rigid.mass = _mass *_modScale *_modScale *_modScale; 
+			_rigid.WakeUp(); 
 		}
-		else transform.localScale = _modScale*_startScale; 
-		_rigid.mass = _mass *_modScale *_modScale *_modScale; 
-		_rigid.WakeUp(); 
 	}
 
 	public void RemoveAdjectiveInfluence(){ //this is used as a button for the designer, so they can modify the base scale. 
@@ -329,9 +332,11 @@ public class Thing : MonoBehaviour {
 		}
 	}
 	public void MakePhysicsKinematic(){
+		Debug.Log ("making kinematic " + name);
 		_rigid.isKinematic = true; 
 	}
 	public void MakePhysicsNotKinematic(){
+		Debug.Log ("making not kinematic " + name); 
 		_rigid.isKinematic = false; 
 	}
 	float BounceFactor(Thing _otherThing){
@@ -368,7 +373,13 @@ public class Thing : MonoBehaviour {
 			EliminateLandingChaos(); 
 		}
 	}
-	float BreakThreshold(){ //returns how much it takes to break this object
+	public float BreakThreshold(){ //returns how much it takes to break this object
+		if (_madeOf == null) {
+			_madeOf = World.WhatAmIMadeOf(this);
+		}
+		if (_rigid == null) {
+			_rigid = GetComponent<Rigidbody>(); 
+		}
 		return _rigid.mass *_durability * _madeOf.Fragility;
 	}
 	void Breaktest(Thing _otherThing){
@@ -412,7 +423,7 @@ public class Thing : MonoBehaviour {
 		}
 	}
 	void EliminateHorizontalChaos(){
-		if(World.Chaos <1 ){ //Eliminates minute changes in inertia on the XZ plane
+		if(World.Chaos <1 && !_rigid.isKinematic ){ //Eliminates minute changes in inertia on the XZ plane
 			float _x = 0;
 			float _z = 0; 
 			float _posX; 
@@ -433,7 +444,7 @@ public class Thing : MonoBehaviour {
 				_z = _rigid.velocity.z; 
 				_posZ = transform.position.z; 
 			}
-			if(!_rigid.isKinematic){
+			if(!_rigid.isKinematic){ 
 				_rigid.velocity = new Vector3(_x,_rigid.velocity.y,_z); 
 			}
 			transform.position = new Vector3(_posX, transform.position.y,_posZ);
@@ -480,20 +491,46 @@ public class Thing : MonoBehaviour {
 		}
 		_force = _rigid.mass * _velocity.magnitude; 
 	}
-
+	public void SetLaunchVelocity(Vector3 _theVelocity){
+		_rigid.velocity = _theVelocity;
+	}
+	
 	void OnCollisionEnter(Collision _other){ //when we hit objects, do shit. 
 		if(_other.collider.GetComponent<Mechanical>() == null){ //mechanical objects have their own collision setup
 			Thing _colThing = _other.gameObject.GetComponent<Thing> (); 
 			Breaktest (_colThing); 
 			if (_colThing != null) { //if a thing collides with another thing
 				GetBounced(_other, _colThing); 
-				//StopMoving(); 
+				StopMoving(); 
 			}
 			PlayerController _player = _other.gameObject.GetComponent<PlayerController> (); //if it's colliding with a plaer
 			if (_player != null) {
 				GetBounced(_other, _player); 
 			}
 		}
+	}
+
+	#endregion
+
+	#region PlayerInteraction
+
+	public bool PickUp(Transform _parent){
+		if(!_rigid.isKinematic){
+			MakePhysicsKinematic (); 
+			transform.position = _parent.position; 
+			transform.parent = _parent;
+			gameObject.layer = 8; 
+			//_isFreeRotating = true; 
+			return true; 	
+		}
+		return false; 
+	}
+	public void Drop(){
+		MakePhysicsNotKinematic (); 
+		transform.parent = null; 
+		gameObject.layer = 0; 
+		_rotation = transform.rotation;
+		//_isFreeRotating = false; 
 	}
 
 	#endregion
@@ -564,8 +601,6 @@ public class Thing : MonoBehaviour {
 		_rotation = transform.rotation; 
 
 		_id = World.GetID (); 
-
-
 	}
 	void Update(){
 		OnFireHandling (); 

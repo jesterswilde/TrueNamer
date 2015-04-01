@@ -47,10 +47,12 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Code\FX\FireFX.cs" />
+     <Compile Include="Assets\Code\Mech\MechHelper_TargetMarker.cs" />
+     <Compile Include="Assets\Code\Mech\MechHelper_TriggerVolume.cs" />
      <Compile Include="Assets\Code\Mech\Mechanical.cs" />
      <Compile Include="Assets\Code\Mech\Mechanical_Circle.cs" />
+     <Compile Include="Assets\Code\Mech\Mechanical_Launcher.cs" />
      <Compile Include="Assets\Code\Mech\Mechanical_Line.cs" />
-     <Compile Include="Assets\Code\Mech\Mechanical_TargetMarker.cs" />
      <Compile Include="Assets\Code\Player\CameraController.cs" />
      <Compile Include="Assets\Code\Player\GroundDetection.cs" />
      <Compile Include="Assets\Code\Player\Mo_ClimbCeiling.cs" />

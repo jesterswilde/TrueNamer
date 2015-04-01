@@ -126,6 +126,11 @@ public class World : MonoBehaviour {
 			}
 		}
 	}
+	public static void RemoveHeldObjectFromGroundD(){
+			foreach (GroundDetection _groundD in _allGroundD) {
+			_groundD.ClearHeldObjectFromList(); 
+		}
+	}
 
 	#endregion
 

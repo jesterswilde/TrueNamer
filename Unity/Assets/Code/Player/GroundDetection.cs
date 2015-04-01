@@ -14,10 +14,19 @@ public class GroundDetection : MonoBehaviour {
 	bool _shouldGetStayColliders = false;
 
 	void AddSurface(Collider _collider){
-		if(!_theGround.Contains(_collider.gameObject)){
-			Debug.Log("adding surface") ;
-			_theGround.Add (_collider.gameObject); 
-			World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
+		if(World.PlayerCon.HeldThing == null){
+			if(!_theGround.Contains(_collider.gameObject)){
+				Debug.Log("adding surface") ;
+				_theGround.Add (_collider.gameObject); 
+				World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
+			}
+		}
+		else{
+			if(!_theGround.Contains(_collider.gameObject) && World.PlayerCon.HeldThing.gameObject != _collider.gameObject){
+				Debug.Log("adding surface") ;
+				_theGround.Add (_collider.gameObject); 
+				World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
+			}
 		}
 	}
 	void RemoveSurface(Collider _collider){
@@ -27,6 +36,9 @@ public class GroundDetection : MonoBehaviour {
 				World.PlayerCon.GetTouchedSurface(RayFromPlayer(), _isGroundD, this); //fire off a raycast to check what is going on with the new ground.
 			}
 		}
+	}
+	public void ClearHeldObjectFromList(){
+		_theGround.Remove (World.PlayerCon.HeldThing.gameObject);
 	}
 	Ray RayFromPlayer(){ 
 		Debug.DrawRay(World.PlayerCon.transform.position, (transform.position - World.PlayerCon.transform.position), Color.red,10);
@@ -64,7 +76,6 @@ public class GroundDetection : MonoBehaviour {
 		if(_shouldGetStayColliders){
 			if (_collider.gameObject.layer != 8) {
 				AddSurface (_collider); 
-				Debug.Log("Grabbed surface " + _collider.name); 
 			}
 		}
 	}

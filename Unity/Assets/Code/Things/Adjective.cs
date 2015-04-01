@@ -7,7 +7,10 @@ public class Adjective : MonoBehaviour {
 	public string adjName; 
 	public Sprite symbol; 
 	public Color adjTint; 
-	
+
+	[SerializeField]
+	bool _locked =false; 
+	public bool Locked { get { return _locked; } }
 	public float scale = 1; 
 	public float earth = 0;
 	public float fire = 0; 

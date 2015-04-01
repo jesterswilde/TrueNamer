@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -51,7 +51,7 @@ public class Mechanical_Circle : Mechanical {
 
 	void AddMarkers(){
 		foreach (Transform _trans in _targets) {
-			_trans.gameObject.AddComponent<Mechanical_TargetMarker>(); 
+			_trans.gameObject.AddComponent<MechHelper_TargetMarker>(); 
 		}
 	}
 
@@ -60,8 +60,8 @@ public class Mechanical_Circle : Mechanical {
 		if (_theThing != null) {
 			Debug.Log("Mass Threshold " + _theThing.Rigid.mass +  " | " + _massThreshold); 
 			if(_theThing.Rigid.mass < _massThreshold){ //object is not too small
-				Debug.Log(_targets[ClosestTarget(_col.contacts[0].point)].GetComponent<Mechanical_TargetMarker>().GetSpeed() + " | Speed " ) ;
-				_theThing.HitByMechanical(true, _targets[ClosestTarget(_col.contacts[0].point)].GetComponent<Mechanical_TargetMarker>().GetSpeed()*_rigid.mass); 
+				Debug.Log(_targets[ClosestTarget(_col.contacts[0].point)].GetComponent<MechHelper_TargetMarker>().GetSpeed() + " | Speed " ) ;
+				_theThing.HitByMechanical(true, _targets[ClosestTarget(_col.contacts[0].point)].GetComponent<MechHelper_TargetMarker>().GetSpeed()*_rigid.mass); 
 			}
 			else{
 				ObjectTooHeavy(); 

@@ -10,27 +10,19 @@ public class Mo_Ground : Motion {
 
 	float _time; 
 	float _jumpTime; 
-	Vector3 _up; 
-	Vector3 _right; 
 
-	void MoveForward(){ //controls when they move forward. This whole script should be broken up into different states.
-		if (_verticalInput > 0 &&  !_forwardD.IsGrounded()){
-			_speed.z += 5; 
-		}
-	}
-	void MoveBackwards(){ //simlar to forward, this is different because I may want to clamp and have different anims and such
-		if(_verticalInput < 0){
-			_speed.z -= 1; 
+	void MoveForward(){ //controls when they move forward. 
+		if (!_forwardD.IsGrounded()){ //no forward movement when they are in front of walls, it messes with jumping 
+			_speed.z = _verticalInput; 
 		}
 	}
 	void Strafe(){
-		_speed.x += 3 * _horizontalInput; 
+		_speed.x = _horizontalInput; 
 	}
 
 	void Jump(){ //can only jump when on the ground. When space is pushed they go up
 		if (_jumpInput > 0.5f && _verticalInput > 0 &&  _canJump && !_forwardD.IsGrounded()) {
 			//they are moving forward and jumping
-			//_rigid.AddRelativeForce(new Vector3(0,0,1) *_jumpPower/16,ForceMode.Impulse); 
 			_rigid.AddForce(new Vector3(0,1,0)*_jumpPower,ForceMode.Impulse);
 			StartJumpDelay(); 
 			return;
@@ -40,17 +32,12 @@ public class Mo_Ground : Motion {
 			StartJumpDelay(); 
 		}
 	} 
-	void CalculateAxis(){
-		_up = Vector3.ProjectOnPlane(_player.transform.forward,_player.GroundHit.normal); //we are rotating up based on the the camera
-		_right = (Quaternion.AngleAxis(-90,_player.GroundHit.normal) *_up).normalized;
-	}
-
 	void CalculateSpeed(){
 		float _modMaxSpeed = _maxSpeed;
 		float _modAcceleration = _acceleration; 
 		if(_player.StandingOnMadeOf != null){ //this is getting whether the player is standing on someting rough
 			_modMaxSpeed = _maxSpeed - _player.StandingOnMadeOf.Rough; 
-			_modAcceleration = Mathf.Clamp(_acceleration - (_player.StandingOnMadeOf.Rough/2),3,100);
+			_modAcceleration = Mathf.Max(_acceleration - (_player.StandingOnMadeOf.Rough),3);
 		}
 		if (_speed == Vector3.zero && _canJump) { //if there is no input, stop them immediately
 			_rigid.velocity = Vector3.zero;  	
@@ -60,8 +47,9 @@ public class Mo_Ground : Motion {
 				LookTowardsCamera(); //this is the player is holding a direction and not jumping
 				Vector3 _unprojectedForward = (_player.transform.forward * _speed.z + _player.transform.right * _speed.x).normalized; 
 				Vector3 _projectedForward = Vector3.ProjectOnPlane(_unprojectedForward, _player.GroundHit.normal).normalized; 
-				if(_projectedForward.y <= 0 || Vector3.Angle(_unprojectedForward, _projectedForward)*2 < _player.SlopeAngle){
+				if(_projectedForward.y <= 0 || Vector3.Angle(_unprojectedForward, _projectedForward)*2 < _player.SlopeAngle){ //if the surface they are standing on is not sloped upward above teh slope angle
 					float _mag = Mathf.Clamp(_rigid.velocity.magnitude,0,_modMaxSpeed); 
+					//_rigid.velocity = _projectedForward * (Mathf.Max (_mag,3) + _modAcceleration * Time.fixedDeltaTime );
 					_rigid.velocity = _projectedForward * (Mathf.Max (_mag,3) + _modAcceleration * Time.fixedDeltaTime );
 				}
 				else{
@@ -85,42 +73,61 @@ public class Mo_Ground : Motion {
 			}
 		}
 	}
+	void FloorCheck(){ //in case we are in this state and there is no ground where there should be. 
+		if (_player.StandingOnMadeOf == null) {
+			_player.GetTouchedSurface(); 
+		}
+	}
 
-	void GrabObject(){
-		if (_player.SelectedThing != null && _canJump) {
-			if(Input.GetKeyDown(KeyCode.E)){ 
-				//cast another ray from the player to the object
-				Ray _ray = new Ray(_player.transform.position,(_player.ThingRayHit.collider.gameObject.transform.position - _player.transform.position).normalized); 
-				RaycastHit _hit;
-				int _mask = ~ (1 << 8); 
-				float _dist = 10000; 
-				if(Physics.Raycast(_ray, out _hit,10,_mask)){
-					_dist = Vector3.Distance(_player.transform.position, _hit.point); 
-				}
-				if(_dist < 2.2f && _hit.collider.gameObject.GetComponent<Rigidbody>().mass < _player.MaxPull){
-					_player.ThingRayHit = _hit; 
-					_player.EnterState (_player.PullingMo); ; 
+	void GrabObject(){ //The player can only grab objects when grounded, Though may need to move this section to Motion when slick is fully implemented
+		if(_player.HeldThing == null){
+			if (_player.SelectedThing != null && _canJump) {
+				if(Input.GetKeyDown(KeyCode.E)){ 
+					//cast another ray from the player to the object
+					Ray _ray = new Ray(_player.transform.position,(_player.ThingRayHit.collider.gameObject.transform.position - _player.transform.position).normalized); 
+					RaycastHit _hit;
+					int _mask = ~ (1 << 8); //ignore the player layer
+					float _dist = 10000; 
+					if(Physics.Raycast(_ray, out _hit,10,_mask)){
+						_dist = Vector3.Distance(_player.transform.position, _hit.point); 
+					}
+					if(_dist < 2.2f && _hit.collider.gameObject.GetComponent<Rigidbody>().mass < _player.MaxHold){ //if the player is close enough to pick up the thing
+						_player.ThingRayHit = _hit; 
+						_player.PickUpThing(); 
+						return; 
+					}
+					if(_dist < 2.2f && _hit.collider.gameObject.GetComponent<Rigidbody>().mass < _player.MaxPull){
+						_player.ThingRayHit = _hit; 
+						_player.EnterState (_player.PullingMo); ; 
+						return; 
+					}
 				}
 			}
 		}
+		else{
+			if(Input.GetKeyDown(KeyCode.E)){
+				Debug.Log("Holding " + _player.HeldThing); 
+				_player.DropThing(); 
+			}
+		}
 	}
-	public override void ControlsEffect ()
+	public override void ControlsEffect () //called on fixed update
 	{
 		base.ControlsEffect ();
 		_speed = Vector3.zero; 
 		MoveForward (); 
-		MoveBackwards ();
 		Strafe (); 
 		CalculateSpeed (); 
 		Jump ();
 		JumpTimer (); 
+		FloorCheck ();
 	}
-	public override void ControlsInput ()
+	public override void ControlsInput () //called on Update
 	{
 		base.ControlsInput ();
 
 	}
-	public override void MotionState ()
+	public override void MotionState ()//Checks for conditions to leave this movement state
 	{
 		if (_groundD.IsGrounded() == false) {
 			_player.EnterState(_player.InAirMo); 
@@ -137,17 +144,13 @@ public class Mo_Ground : Motion {
 		StartJumpDelay (); 
 		_camera.Normal (); 
 		MotionState (); 
-		//_rigid.useGravity = false;
 	}
 	public override void ExitState ()
 	{
 		base.ExitState ();
-		//_rigid.useGravity = true;
 	}
 	public override void Startup ()
 	{
 		base.Startup ();
-		_state = "ground"; 
-		_lastState = "ground"; 
 	}
 }

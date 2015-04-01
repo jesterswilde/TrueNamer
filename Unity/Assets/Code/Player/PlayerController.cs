@@ -29,6 +29,9 @@ public class PlayerController : MonoBehaviour {
 	float _maxPull;
 	public float MaxPull{ get { return _maxPull; } }
 	[SerializeField]
+	float _maxHold;
+	public float MaxHold { get { return _maxPull; } }
+	[SerializeField]
 	float _adjMaxDistance = 7; 
 	public float AdjMaxDistance { get { return _adjMaxDistance; } }
 	[SerializeField]
@@ -43,7 +46,9 @@ public class PlayerController : MonoBehaviour {
 	Vector3 _velocity; 
 	public Vector3 Velocity { get { return _velocity; } }
 
-	//all the components
+	//all the components and relevant game objects
+	[SerializeField]
+	Transform _heldThingParent; 
 	[SerializeField]
 	GroundDetection _groundD; 
 	public GroundDetection GroundD { get { return _groundD; } }
@@ -91,15 +96,18 @@ public class PlayerController : MonoBehaviour {
 	float _pauseTimer = 0; 
 	float _pauseMotionDelay = .1f; 
 
-
 	//Things and stuff related to things
 	[SerializeField]
 	Thing _selectedThing; 
 	public Thing SelectedThing { get { return _selectedThing; } set { _selectedThing = value; } }
 	Thing _pulledThing; 
+	Thing _heldThing = null; 
+	public Thing HeldThing { get { return _heldThing; } }
 	RaycastHit _thingRayHit;
 	public RaycastHit ThingRayHit { get { return _thingRayHit; } set { _thingRayHit = value; } }
 	public Thing PulledThing { get { return _pulledThing; } set { _pulledThing = value; } }
+	Mechanical _selectedMech = null;
+	public Mechanical SelectedMech { get { return _selectedMech; } }
 
 	//Adjective stuff 
 	[SerializeField]
@@ -119,8 +127,25 @@ public class PlayerController : MonoBehaviour {
 		_move = _theMove;
 		_move.EnterState (); 
 	}
+	void GroundedCheck(){ //puts the player into the air as a neutral state
+		if(_curGrounD != null){
+			if (!_curGrounD.IsGrounded ()) {
+				EnterState(_moInAir); 
+			}
+		}
+	}
+	public void PickUpThing(){ //These are called by the motition states, currenly only mo_ground
+		if(_selectedThing.PickUp (_heldThingParent)){ //check to make sure you can pick up object
+			_heldThing = _selectedThing; 
+			World.RemoveHeldObjectFromGroundD() ;
+		}
+	}
+	public void DropThing(){
+		_heldThing.Drop (); 
+		_heldThing = null; 
+	}
 
-	public void Pause(){
+	public void Pause(){//when the game is paused we increase drag in case the player gets shunted by growing objects
 		_isPauseMotion = true; 
 		_pauseTimer = 0;
 		_pauseVelocity = _rigid.velocity;
@@ -152,7 +177,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		return false; 
 	}
-	void TouchedSurfaceSafetyCheck(){
+	void TouchedSurfaceSafetyCheck(){ //just make sure we are moving on the correct plane. 
 		if (_curGrounD != null) {
 			Ray _ray = new Ray(transform.position, _curGrounD.transform.position - transform.position); 
 			GetTouchedSurface(_ray,_curGrounD.IsTheGround,_curGrounD); 
@@ -236,14 +261,30 @@ public class PlayerController : MonoBehaviour {
 		RaycastHit _hit;
 		if(Physics.Raycast(_ray,out _hit,100,_mask)){
 			Thing _thingFromRay = _hit.collider.gameObject.GetComponent<Thing>(); 
-			float _distance = Vector3.Distance(_hit.point, transform.position); 
-			SelectTheThing(_thingFromRay, _hit, _distance); 
+			if(_thingFromRay != null){
+				float _distance = Vector3.Distance(_hit.point, transform.position); 
+				SelectTheThing(_thingFromRay, _hit, _distance); 
+			}
+			else{
+				Mechanical _mechFromRay = _hit.collider.gameObject.GetComponent<Mechanical>(); 
+				if(_mechFromRay !=null){
+					SelectTheMech(_mechFromRay); 
+				}
+			}
 		}
 		else{
-			SelectTheThing(null,_hit, 100); 
+			SelectTheMech(null); 
 		}
 	}
-	void SelectTheThing(Thing _theThing, RaycastHit _theHit, float _distance){
+	void SelectTheMech(Mechanical _theMech){ //we are looking at something mechanical
+		if(_selectedThing != null){
+			_selectedThing.Deselect(); 
+			_selectedThing = null; 
+		}
+		_thingRayHit = new RaycastHit (); 
+		_selectedMech = _theMech; 
+	}
+	void SelectTheThing(Thing _theThing, RaycastHit _theHit, float _distance){ //we are looking at a thing
 		if(_theThing != null && _distance < _adjMaxDistance){ 
 			if(_selectedThing != null){ //you are selecting something that isn't null
 				if (_theThing.ID != _selectedThing.ID) { //they are not the same thing
@@ -266,7 +307,13 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 	}
-
+	void ActivateMech(){
+		if (Input.GetKeyDown (KeyCode.E)) {
+			if(_selectedMech != null){
+				_selectedMech.Activate(); 
+			}
+		}
+	}
 	void Clicking(){
 		if (Input.GetMouseButtonDown (0)) {
 			if(!World.IsPaused){ //if the game is not pause
@@ -291,6 +338,7 @@ public class PlayerController : MonoBehaviour {
 				WorldUI.HideInventoryOnly(); 
 			}
 		}
+		ActivateMech ();
 	}
 	
 
@@ -350,6 +398,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	void FixedUpdate () {
 		_move.ControlsEffect (); //calls has the effects of physics stuff happen
+		GroundedCheck (); 
 		UnpauseMotionDelay ();
 	}
 	void Update(){
